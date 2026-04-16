@@ -256,7 +256,7 @@
             
             <!-- User Widget -->
             <div class="user-widget">
-                <div class="user-profile-trigger" data-action="toggle-dropdown" data-target="userDropdown">
+                <div class="user-profile-trigger" data-action="toggle-dropdown" data-target="nexusUserDropdown">
                     <div class="avatar">
                         {% if current_user %}{{ current_user.name[:2].upper() }}{% else %}AD{% endif %}
                     </div>
@@ -265,7 +265,7 @@
                         <span class="user-role-label">{% if current_user %}{{ current_user.role }}{% else %}Admin{% endif %}</span>
                     </div>
                 </div>
-                <div class="user-dropdown-panel" id="userDropdown">
+                <div class="user-dropdown-panel" id="nexusUserDropdown">
                     <div class="user-dropdown-header">
                         <span class="user-id-prefix">Identificado como</span>
                         <span class="user-email-text" title="{% if current_user %}{{ current_user.email }}{% else %}admin@filemanager.local{% endif %}">

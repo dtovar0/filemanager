@@ -76,6 +76,21 @@ Sistema de logs cronológicos con indicadores de estado brillantes.
   - `node-glow--rose`: #e11d48 (Peligro / Eliminación)
   - `node-glow--amber`: #f59e0b (Advertencia / Carpeta)
 
+### 🔘 Nexus Button Master
+Sistema de botones unificado para acciones críticas y secundarias.
+- **Dimensiones:** Altura fija de `48px`.
+- **Estructura:** Cuerpo transparente con borde sutil, icono dentro de caja sólida (`btn-icon-box` de 32px).
+- **Tipografía:** `Outfit`, peso 700, tamaño `0.8rem`.
+- **Comportamiento:**
+  - Hover: Elevación -2px, cambio de fondo a gradiente suave.
+  - Active: `scale(0.97)`.
+
+### 🌌 Premium Empty State (The Indigo Void)
+Componente de alta densidad para directorios sin contenido.
+- **Visual:** Blob radial indigo animado (pulso suave) + Icono central `fa-folder-open`.
+- **Tipografía:** Título `1.5rem` (Peso 900), Texto descriptivo `0.95rem` con interlineado `1.6`.
+- **Clase CSS:** `.premium-empty-state-nexus-v2`.
+
 ## 📑 Business Rules (UI Compliance)
 1. **No Inline Styles:** Solo se permiten en casos excepcionales de inyección dinámica por JS. El resto debe estar en `drive.css` o `style.css`.
 2. **Interactive States:** Target mínimo de `48px` para táctil. Efecto click: `transform: scale(0.96)`.

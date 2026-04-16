@@ -1871,3 +1871,74 @@ tbody tr { height: 64px; border-bottom: 1px solid var(--border-color); }
 .fs-xs { font-size: 0.75rem !important; }
 .text-muted { color: var(--text-muted) !important; }
 .fw-700 { font-weight: 700 !important; }
+
+/* Premium Avatar & User Dropdown Overhaul */
+.user-dropdown-panel {
+    position: absolute !important;
+    bottom: calc(100% + 15px) !important;
+    left: 1rem !important;
+    width: 240px !important;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+    padding: 0.75rem !important;
+    z-index: 9999 !important;
+    display: none;
+    flex-direction: column;
+    animation: dropdownPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.user-dropdown-panel.show {
+    display: flex !important;
+}
+
+@keyframes dropdownPop {
+    from { transform: translateY(10px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.user-dropdown-header {
+    padding: 0.5rem 0.75rem 0.75rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.user-id-prefix {
+    font-size: 0.65rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: var(--text-muted) !important;
+    font-weight: 700 !important;
+    display: block !important;
+}
+
+.user-email-text {
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+}
+
+.logout-action {
+    background: rgba(239, 68, 68, 0.05) !important;
+    color: #ef4444 !important;
+    font-weight: 700 !important;
+    justify-content: center !important;
+    margin-top: 0.5rem !important;
+    border: 1px solid rgba(239, 68, 68, 0.1) !important;
+}
+
+.logout-action:hover {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* Avatar Refinement */
+.avatar {
+    border: 2px solid var(--border-color) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}

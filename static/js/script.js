@@ -320,8 +320,18 @@ function initSidebar() {
 window.initSidebar = initSidebar;
 
 function toggleDropdown(id) {
-    const drop = document.getElementById(id || 'userDropdown');
-    if (drop) drop.classList.toggle('show');
+    const targetId = id || 'nexusUserDropdown';
+    const drop = document.getElementById(targetId);
+    if (drop) {
+        // Intercambiar estado
+        const isShown = drop.classList.contains('show');
+        
+        // Cerrar todos primero para evitar solape
+        document.querySelectorAll('.user-dropdown-panel').forEach(d => d.classList.remove('show'));
+        
+        // Si no estaba mostrado, mostrarlo
+        if (!isShown) drop.classList.add('show');
+    }
 }
 window.toggleDropdown = toggleDropdown;
 
@@ -423,10 +433,9 @@ document.addEventListener('click', (e) => {
 
 // Close dropdown on outside click
 window.addEventListener('click', (event) => {
-    if (!event.target.closest('[data-action="toggle-dropdown"]')) {
-        const dropdown = document.getElementById('userDropdown');
-        if (dropdown && dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show');
-        }
+    if (!event.target.closest('[data-action="toggle-dropdown"]') && !event.target.closest('.user-dropdown-panel')) {
+        document.querySelectorAll('.user-dropdown-panel').forEach(d => {
+            d.classList.remove('show');
+        });
     }
 });

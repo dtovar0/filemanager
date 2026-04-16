@@ -3,7 +3,7 @@
 {% block title %}Nexus Drive - Explorador Premium{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/drive.css') }}?v=20">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/drive.css') }}?v=21">
 {% endblock %}
 
 {% block sidebar %}
@@ -33,8 +33,20 @@
     <nav class="sidebar-nav">
     {% if all_areas %}
         {% for area in all_areas %}
+        {% set icon_map = {
+            'trending-up': 'fa-chart-line',
+            'activity': 'fa-heartbeat',
+            'monitor': 'fa-desktop',
+            'smartphone': 'fa-mobile-alt',
+            'layers': 'fa-layer-group',
+            'tool': 'fa-tools',
+            'hash': 'fa-hashtag',
+            'git-branch': 'fa-code-branch',
+            'git-pull-request': 'fa-code-merge'
+        } %}
+        {% set final_icon = icon_map[area.icon] if area.icon in icon_map else area.icon %}
         <div class="nav-item catalog-tab-item" data-tab="archivos" data-action="open-area" data-area-name="{{ area.name }}">
-            <i class="fas {{ area.icon if area.icon.startswith('fa-') else 'fa-' + area.icon if area.icon else 'fa-folder' }} nav-item-icon"></i>
+            <i class="fas {{ final_icon if (final_icon and final_icon.startswith('fa-')) else ('fa-' + final_icon) if final_icon else 'fa-folder' }} nav-item-icon" style="color: {{ area.color if area.color and not area.color.startswith('linear') else 'var(--primary-color)' }}"></i>
             <span>{{ area.name }}</span>
         </div>
         {% endfor %}
@@ -56,10 +68,7 @@
 {% endblock %}
 
 {% block top_left %}
-    <div id="unified-navigator" class="nav-bar--unified">
-        <button class="btn btn-ghost" id="back-nav-btn" disabled>
-            <i class="fas fa-arrow-left"></i>
-        </button>
+    <div id="unified-navigator">
         <div id="catalog-breadcrumb" class="breadcrumb--dynamic">
             <!-- Breadcrumbs dinámicos -->
         </div>
@@ -194,65 +203,76 @@
                 
                 <!-- Panel Superior: Acciones Rápidas (20% vertical) -->
                 <div class="sidebar-panel sidebar-panel--actions">
-                    <h5 class="management-label--mini">Acciones</h5>
+                    <h5 class="management-label--mini">Acciones de Gestión</h5>
                     <div class="search-wrapper--nexus">
                         <i class="fas fa-search search-wrapper__icon"></i>
                         <input type="text" id="file-search" class="nexus-search-input--premium" placeholder="Buscar en carpeta...">
                     </div>
                     <div class="sidebar-actions-row">
-                        <button class="btn btn-primary--brand btn--half" id="trigger-upload"><i class="fas fa-cloud-upload-alt"></i> Subir</button>
-                        <button class="btn btn-ghost--brand btn--half" id="open-folder-modal"><i class="fas fa-folder-plus"></i> Nueva</button>
+                        <button class="btn btn-primary--brand btn--half" id="trigger-upload">
+                            <div class="btn-icon-box"><i class="fas fa-cloud-upload-alt"></i></div> Subir
+                        </button>
+                        <button class="btn btn-ghost--brand btn--half" id="open-folder-modal">
+                            <div class="btn-icon-box"><i class="fas fa-folder-plus"></i></div> Nueva
+                        </button>
                     </div>
                 </div>
 
                 <!-- Panel Inferior: Vista Previa / Detalle (80% vertical) -->
                 <div class="sidebar-panel sidebar-panel--detail">
                     <div class="preview-header">
-                        <h5 class="management-label--mini">Vista Previa</h5>
+                        <h5 class="management-label--mini">Ficha Técnica</h5>
                     </div>
                     
-                    <!-- Estado Vacío -->
-                    <div id="details-empty" class="preview-empty-state">
-                        <div class="pulsing-icon-container">
-                            <i class="fas fa-fingerprint preview-empty-state__icon"></i>
+                    <!-- Estado Vacío Premium -->
+                    <div id="details-empty" class="empty-state-luxury">
+                        <div class="empty-state-luxury__content">
+                            <div class="empty-state-luxury__icon-box">
+                                <i class="fas fa-fingerprint"></i>
+                            </div>
+                            <h3 class="empty-state-luxury__title">Nexus Intelligence</h3>
+                            <p class="empty-state-luxury__text">Selecciona un activo para desplegar el análisis de metadatos.</p>
+                            <div class="empty-state-luxury__badge">Esperando Selección...</div>
                         </div>
-                        <h4 class="preview-empty-state__title">Sin Selección</h4>
                     </div>
 
                     <!-- Contenido de Detalle -->
                     <div id="details-content" class="preview-active-content d-none">
-                        <!-- 1. Vista Previa (Icono) -->
                         <div id="detail-preview-container" class="preview-nexus-box--luxury">
                             <i class="fas fa-file-alt" id="detail-icon-large"></i>
                         </div>
 
-                        <!-- 2. Nombre -->
                         <h3 id="detail-name" class="preview-item-name text-center">Nombre del Archivo</h3>
                         
-                        <!-- 3. Etiqueta -->
-                        <div class="d-flex justify-center mb-1">
+                        <div class="w-full mb-1">
                             <div id="detail-type-badge" class="type-badge">TIPO ARCHIVO</div>
                         </div>
 
-                        <!-- 4. Detalle (Metadatos) -->
-                        <div class="preview-meta-grid">
-                            <div class="meta-row">
-                                <span class="meta-label">Tamaño</span>
-                                <span id="detail-size" class="meta-value">--</span>
+                        <!-- Ficha Técnica Agrupada -->
+                        <div class="technical-datasheet-nexus">
+                            <div class="technical-row">
+                                <div class="btn-icon-box"><i class="fas fa-weight-hanging"></i></div>
+                                <div class="tech-info">
+                                    <span class="tech-label">Tamaño del Activo</span>
+                                    <span id="detail-size" class="tech-value">--</span>
+                                </div>
                             </div>
-                            <div class="meta-row">
-                                <span class="meta-label">Modificación</span>
-                                <span id="detail-date" class="meta-value">--</span>
+                            <div class="tech-divider"></div>
+                            <div class="technical-row">
+                                <div class="btn-icon-box"><i class="fas fa-history"></i></div>
+                                <div class="tech-info">
+                                    <span class="tech-label">Última Modificación</span>
+                                    <span id="detail-date" class="tech-value">--</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- 5. Botones -->
                         <div class="preview-actions-footer">
                             <button class="btn btn-success--premium" id="btn-download-main">
-                                <i class="fas fa-download"></i> Descargar
+                                <div class="btn-icon-box"><i class="fas fa-download"></i></div> Descargar
                             </button>
                             <button class="btn btn-danger--premium" id="btn-delete-main">
-                                <i class="fas fa-trash-alt"></i> Borrar
+                                <div class="btn-icon-box"><i class="fas fa-trash-alt"></i></div> Borrar
                             </button>
                         </div>
                     </div>

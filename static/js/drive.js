@@ -86,9 +86,15 @@ class FileExplorer {
         this.container.innerHTML = '';
         if (this.items.length === 0) {
             this.container.innerHTML = `
-                <div class="h-full w-full d-flex flex-col items-center justify-center opacity-30 p-2" style="grid-column: 1 / -1;">
-                    <i class="fas fa-folder-open mb-1" style="font-size: 80px;"></i>
-                    <p class="fw-700 fs-lg">Esta ubicación está vacía</p>
+                <div class="premium-empty-state-nexus-v2" style="grid-column: 1 / -1;">
+                    <div class="empty-state-visual-nexus">
+                        <div class="empty-state-blob-nexus"></div>
+                        <div class="empty-state-icon-wrapper-nexus">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                    </div>
+                    <h2 class="empty-state-title-nexus">Ubicación Vacía</h2>
+                    <p class="empty-state-text-nexus">Esta carpeta aún no contiene archivos. Comienza a subir contenido para gestionar tus activos digitales.</p>
                 </div>`;
             return;
         }
@@ -195,14 +201,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Contextuales (Divs)
             if (ctxDownload) ctxDownload.classList.toggle('is-disabled-ctx', !currentPerms.can_download);
             if (ctxDelete) ctxDelete.classList.toggle('is-disabled-ctx', !currentPerms.can_download);
+            const sidebarCol = document.querySelector('.explorer-col-sidebar');
             const gridWrapper = document.getElementById('archivos-grid');
+            
             if (data.context?.kind === 'area_root') {
-                gridWrapper.classList.add('is-area-root-layout');
+                if (gridWrapper) gridWrapper.classList.add('is-area-root-layout');
                 explorer.isAreaRoot = true;
             } else {
-                gridWrapper.classList.remove('is-area-root-layout');
+                if (gridWrapper) gridWrapper.classList.remove('is-area-root-layout');
                 explorer.isAreaRoot = false;
             }
+            if (sidebarCol) sidebarCol.style.display = 'flex'; // Siempre visible en explorador
             if (!breadcrumb) return;
             breadcrumb.innerHTML = '';
             const parts = path.split('/').filter(p => p !== '');
@@ -612,20 +621,27 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.catalog-tab-item').forEach(t => t.classList.remove('active'));
         if (trigger) trigger.classList.add('active');
 
-        // Control dinámico de breadcrumb
-        if (breadcrumb) {
-            if (id === 'archivos' && trigger && trigger.dataset.areaName) {
-                breadcrumb.classList.remove('d-none');
-                breadcrumb.classList.add('d-flex');
+        // Control dinámico del Navigator (Buscador y Breadcrumb)
+        const navigator = document.getElementById('unified-navigator');
+        if (navigator) {
+            if (id === 'archivos') {
+                navigator.style.setProperty('display', 'flex', 'important');
+                
+                // Toggle interno del breadcrumb
+                if (breadcrumb) {
+                    if (trigger && trigger.dataset.areaName) {
+                        breadcrumb.style.setProperty('display', 'flex', 'important');
+                    } else {
+                        breadcrumb.style.setProperty('display', 'none', 'important');
+                    }
+                }
             } else {
-                breadcrumb.classList.add('d-none');
-                breadcrumb.classList.remove('d-flex');
+                navigator.style.setProperty('display', 'none', 'important');
             }
         }
 
-        if (id === 'inicio') loadStats();
-
         if (id === 'archivos') {
+            const sidebarCol = document.querySelector('.explorer-col-sidebar');
             if (trigger && trigger.dataset.areaName) {
                 if(areaScreen) areaScreen.classList.add('d-none');
                 if(archivosGrid) archivosGrid.classList.remove('d-none');
@@ -633,7 +649,15 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 if(areaScreen) areaScreen.classList.remove('d-none');
                 if(archivosGrid) archivosGrid.classList.add('d-none');
+                if (sidebarCol) sidebarCol.style.display = 'none';
             }
+        }
+        
+        // Ocultar sidebar en Dashboard
+        if (id === 'inicio') {
+            const sidebarCol = document.querySelector('.explorer-col-sidebar');
+            if (sidebarCol) sidebarCol.style.display = 'none';
+            loadStats();
         }
     }
     
