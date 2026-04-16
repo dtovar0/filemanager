@@ -272,6 +272,7 @@ def get_drive_logs():
             'success': True, 
             'logs': [{
                 'id': l.id,
+                'user_name': l.user.name if l.user else 'Sistema',
                 'target_name': l.file_name,
                 'action': l.action,
                 'created_at': l.created_at.strftime('%Y-%m-%d %H:%M:%S')

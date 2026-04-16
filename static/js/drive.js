@@ -223,6 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sidebarCol) sidebarCol.style.display = 'flex'; // Siempre visible en explorador
             if (!breadcrumb) return;
             breadcrumb.innerHTML = '';
+            // Location icon prefix
+            breadcrumb.insertAdjacentHTML('beforeend', `<i class="fas fa-map-marker-alt breadcrumb-location-icon"></i>`);
             const parts = path.split('/').filter(p => p !== '');
             parts.forEach((p, i) => {
                 const seg = document.createElement('span'); seg.className = 'path-segment'; seg.innerText = p;

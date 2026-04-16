@@ -3,7 +3,7 @@
 {% block title %}Nexus Drive - Explorador Premium{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/drive.css') }}?v=21">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/drive.css') }}?v=32">
 {% endblock %}
 
 {% block sidebar %}
@@ -56,12 +56,21 @@
     <div class="flex-1"></div>
     
     <div class="user-widget">
-        <div class="user-profile-trigger">
+        <div class="user-profile-trigger" data-action="toggle-dropdown" data-target="nexusUserDropdown">
             <div class="avatar">{% if current_user %}{{ current_user.name[:2].upper() }}{% else %}AD{% endif %}</div>
-            <div class="user-info">
-                <span class="user-name">{% if current_user %}{{ current_user.name }}{% else %}Admin{% endif %}</span>
-                <span class="user-role">{% if current_user %}{{ current_user.role }}{% else %}Administrator{% endif %}</span>
+            <div class="user-info-container">
+                <span class="user-name-text">{% if current_user %}{{ current_user.name }}{% else %}Admin{% endif %}</span>
+                <span class="user-role-label">{% if current_user %}{{ current_user.role }}{% else %}Administrator{% endif %}</span>
             </div>
+        </div>
+        <div class="user-dropdown-panel" id="nexusUserDropdown">
+            <div class="user-dropdown-header">
+                <span class="user-id-prefix">Identificado como</span>
+                <span class="user-email-text" title="{% if current_user %}{{ current_user.email }}{% else %}admin@filemanager.local{% endif %}">
+                    {% if current_user %}{{ current_user.email }}{% else %}admin@filemanager.local{% endif %}
+                </span>
+            </div>
+            <a href="{{ url_for('main.logout') }}" class="dropdown-item logout-action">Cerrar Sesión</a>
         </div>
     </div>
 </aside>
@@ -95,58 +104,63 @@
     <!-- VISTA 1: DASHBOARD DE ALTA DENSIDAD (PARIDAD TOTAL) -->
     <!-- VISTA 1: DASHBOARD DE ALTA DENSIDAD (UNIFICADO) -->
     <div id="view-inicio" class="catalog-view animate-fade-in p-2">
-        <div class="dashboard-layout" style="display: flex; gap: 24px; min-height: 100%; align-items: stretch !important;">
-            
-            <!-- Columna Principal: KPIs + Gráficas -->
-            <div class="dashboard-layout__primary" style="flex: 0 0 72%; display: flex; flex-direction: column; gap: 32px; min-width: 0;">
-                
-                <!-- KPIs Grid (Compacto en la parte superior) -->
-                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-                    <div class="status-card-dash">
-                        <div class="card-icon-dash icon-bg-emerald"><i class="fas fa-sitemap"></i></div>
-                        <div class="kpi-text-col">
-                            <div class="kpi-value-new">Áreas</div>
-                            <div id="kpi-areas" class="kpi-label-new">0</div>
-                        </div>
-                    </div>
-                    <div class="status-card-dash">
-                        <div class="card-icon-dash icon-bg-indigo"><i class="fas fa-layer-group"></i></div>
-                        <div class="kpi-text-col">
-                            <div class="kpi-value-new">Plataformas</div>
-                            <div id="kpi-platforms" class="kpi-label-new">0</div>
-                        </div>
-                    </div>
-                    <div class="status-card-dash">
-                        <div class="card-icon-dash icon-bg-amber"><i class="fas fa-download"></i></div>
-                        <div class="kpi-text-col">
-                            <div class="kpi-value-new">Descargas</div>
-                            <div id="kpi-downloads" class="kpi-label-new">0</div>
-                        </div>
-                    </div>
-                    <div class="status-card-dash">
-                        <div class="card-icon-dash icon-bg-blue"><i class="fas fa-upload"></i></div>
-                        <div class="kpi-text-col">
-                            <div class="kpi-value-new">Subidas</div>
-                            <div id="kpi-uploads" class="kpi-label-new">0</div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Bloque de Gráficas (Apiladas Verticalmente) -->
-                <div class="charts-row" style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+        <!-- KPIs Full Width (Arriba del split) -->
+        <div class="stats-grid">
+            <div class="status-card-dash">
+                <div class="card-icon-dash icon-bg-emerald"><i class="fas fa-sitemap"></i></div>
+                <div class="kpi-text-col">
+                    <div class="kpi-value-new">Áreas</div>
+                    <div id="kpi-areas" class="kpi-label-new">0</div>
+                </div>
+            </div>
+            <div class="status-card-dash">
+                <div class="card-icon-dash icon-bg-indigo"><i class="fas fa-layer-group"></i></div>
+                <div class="kpi-text-col">
+                    <div class="kpi-value-new">Plataformas</div>
+                    <div id="kpi-platforms" class="kpi-label-new">0</div>
+                </div>
+            </div>
+            <div class="status-card-dash">
+                <div class="card-icon-dash icon-bg-amber"><i class="fas fa-download"></i></div>
+                <div class="kpi-text-col">
+                    <div class="kpi-value-new">Descargas</div>
+                    <div id="kpi-downloads" class="kpi-label-new">0</div>
+                </div>
+            </div>
+            <div class="status-card-dash">
+                <div class="card-icon-dash icon-bg-blue"><i class="fas fa-upload"></i></div>
+                <div class="kpi-text-col">
+                    <div class="kpi-value-new">Subidas</div>
+                    <div id="kpi-uploads" class="kpi-label-new">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Split 72/28: Gráficas | Monitor (Simétrico) -->
+        <div class="dashboard-layout">
+            <!-- Columna Principal: Gráficas -->
+            <div class="dashboard-layout__primary">
+                <div class="charts-row">
                     <div class="stat-card-premium">
-                        <div class="d-flex justify-between items-center mb-075">
-                            <h2 class="stat-card-title-nexus">Actividad de Descargas</h2>
+                        <div class="monitor-header-status">
+                            <div class="d-flex items-center gap-075">
+                                <i class="fas fa-chart-line" style="color: #10b981;"></i>
+                                <h2 class="stat-card-title-nexus">Actividad de Descargas</h2>
+                            </div>
                         </div>
-                        <div class="chart-stage-container" style="height: 220px; position: relative;">
+                        <div class="chart-stage-container">
                             <canvas id="downloadChart"></canvas>
                         </div>
                     </div>
                     <div class="stat-card-premium">
-                        <div class="d-flex justify-between items-center mb-075">
-                            <h2 class="stat-card-title-nexus">Actividad de Subidas</h2>
+                        <div class="monitor-header-status">
+                            <div class="d-flex items-center gap-075">
+                                <i class="fas fa-cloud-upload-alt" style="color: var(--primary-color);"></i>
+                                <h2 class="stat-card-title-nexus">Actividad de Subidas</h2>
+                            </div>
                         </div>
-                        <div class="chart-stage-container" style="height: 220px; position: relative;">
+                        <div class="chart-stage-container">
                             <canvas id="uploadChart"></canvas>
                         </div>
                     </div>
@@ -154,16 +168,16 @@
             </div>
 
             <!-- Columna Secundaria: Monitor de Actividad -->
-            <div class="dashboard-layout__secondary" style="flex: 0 0 calc(28% - 24px); min-width: 320px; display: flex; flex-direction: column;">
-                <div class="activity-monitor-panel" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; flex: 1;">
-                    <div class="monitor-header-status" style="display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px;">
+            <div class="dashboard-layout__secondary">
+                <div class="activity-monitor-panel">
+                    <div class="monitor-header-status">
                         <div class="d-flex items-center gap-075">
                             <i class="fas fa-satellite-dish" style="color: var(--primary-color);"></i>
                             <h2 class="stat-card-title-nexus">Monitor de Sistema</h2>
                         </div>
                         <span class="monitor-status-pulse"></span>
                     </div>
-                    <div id="activity-log-monitor" class="log-list-dynamic" style="flex: 1; overflow-y: auto; max-height: 580px;">
+                    <div id="activity-log-monitor" class="log-list-dynamic">
                         <!-- Inyección vía drive.js -->
                     </div>
                 </div>
