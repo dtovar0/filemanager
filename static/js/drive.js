@@ -129,7 +129,8 @@ class FileExplorer {
                 ${extraClass ? '<span class="platform-badge-mini">Plataforma</span>' : ''}
             </div>
         `;
-        card.onclick = () => {
+        card.onclick = (e) => {
+            e.stopPropagation();
             this.container.querySelectorAll('.explorer-item').forEach(el => el.classList.remove('selected'));
             card.classList.add('selected');
             this.onFileSelect(item, info);
@@ -142,6 +143,14 @@ class FileExplorer {
         }
         this.container.appendChild(card);
         });
+
+        // Click en el fondo para deseleccionar
+        this.container.onclick = (e) => {
+            if (e.target === this.container) {
+                this.container.querySelectorAll('.explorer-item').forEach(el => el.classList.remove('selected'));
+                if (this.onFileSelect) this.onFileSelect(null);
+            }
+        };
     }
 }
 
@@ -225,6 +234,15 @@ document.addEventListener('DOMContentLoaded', () => {
         onFileSelect: async (item, info) => {
             const empty = document.getElementById('details-empty');
             const content = document.getElementById('details-content');
+            
+            // SI NO HAY ITEM (Deselección), mostrar estado vacío y ocultar ficha
+            if (!item) {
+                if (empty) { empty.classList.remove('d-none'); empty.classList.add('d-flex'); }
+                if (content) { content.classList.add('d-none'); content.classList.remove('d-flex'); }
+                return;
+            }
+
+            // SI HAY ITEM, ocultar estado vacío y mostrar ficha
             if (empty) {
                 empty.classList.add('d-none');
                 empty.classList.remove('d-flex');
