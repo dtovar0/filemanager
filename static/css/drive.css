@@ -2304,8 +2304,6 @@
     overflow: hidden !important;
 }
 
-/* Utility Alignment */
-.d-none { display: none !important; }
 .d-flex { display: flex !important; }
 
 /* Premium Empty State V2 — The Indigo Void */
@@ -3143,4 +3141,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* HIGH PRIORITY UTILITIES (FORCE SHIELD) */
+.d-none, #sidebar-right.d-none { 
+    display: none !important; 
 }

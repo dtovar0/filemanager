@@ -113,6 +113,13 @@ class FileExplorer {
             console.error('FileExplorer: Container not found!');
             return;
         }
+
+        // Reforzar ocultamiento de sidebar en cada renderizado
+        const sidebarRight = document.getElementById('sidebar-right');
+        if (sidebarRight) {
+            sidebarRight.classList.toggle('d-none', this.isAreaRoot);
+        }
+
         this.container.innerHTML = '';
         if (this.items.length === 0) {
             this.container.innerHTML = `
