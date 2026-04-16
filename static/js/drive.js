@@ -94,25 +94,33 @@ class FileExplorer {
         }
 
         this.items.forEach(item => {
-            const info = FileIcons.getInfo(item.name, item.is_dir);
             const pathParts = this.currentPath.split('/').filter(p => p !== '');
+            const isPlatformLevel = pathParts.length === 1; // Estamos dentro de un área, viendo plataformas
             
-            // Iconos de plataforma en raíz
-            if (pathParts.length === 1 && item.is_dir) {
+            let info = FileIcons.getInfo(item.name, item.is_dir);
+            let extraClass = '';
+            
+            // Lógica Especial para Plataformas en la Raíz del Área
+            if (isPlatformLevel && item.is_dir) {
                 const plat = this.allPlatforms.find(p => p.name === item.name || p.storage_path === item.name);
-                if (plat && plat.icon) info.icon = plat.icon.startsWith('fa-') ? plat.icon : 'fa-' + plat.icon;
+                if (plat) {
+                    info.icon = plat.icon ? (plat.icon.startsWith('fa-') ? plat.icon : 'fa-' + plat.icon) : 'fa-layer-group';
+                    info.color = plat.color || '#6366f1';
+                    extraClass = 'is-platform-card';
+                }
             }
 
         const card = document.createElement('div');
-        card.className = 'explorer-item';
+        card.className = `explorer-item ${extraClass}`;
         
-        // Construcción de la tarjeta vertical Luxury con diferenciación cromática reforzada
+        // Construcción de la tarjeta vertical Luxury
         card.innerHTML = `
-            <div class="explorer-icon-wrapper" style="background: ${info.color}25; color: ${info.color}; border: 1.5px solid ${info.color}40; box-shadow: 0 8px 20px ${info.color}20;">
+            <div class="explorer-icon-wrapper" style="background: ${info.color}25; color: ${info.color}; border: 1.5px solid ${info.color}40; box-shadow: 0 8px 18px ${info.color}15;">
                 <i class="fas ${info.icon}"></i>
             </div>
             <div class="explorer-item-info">
                 <div class="explorer-item-name" title="${item.name}">${item.name}</div>
+                ${extraClass ? '<span class="platform-badge-mini">Plataforma</span>' : ''}
             </div>
         `;
         card.onclick = () => {
@@ -410,12 +418,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('activity-log-monitor');
         if (!container) return;
         
-        const colors = {
-            'Alta': { icon: 'fa-cloud-upload-alt', color: '#4f46e5', bg: 'rgba(79, 70, 229, 0.1)' },
-            'Carga': { icon: 'fa-cloud-upload-alt', color: '#4f46e5', bg: 'rgba(79, 70, 229, 0.1)' },
-            'Descarga': { icon: 'fa-cloud-download-alt', color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
-            'Baja': { icon: 'fa-trash-alt', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
-            'Carpeta': { icon: 'fa-folder-plus', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' }
+        const config = {
+            'Alta': { icon: 'fa-cloud-upload-alt', class: 'node-glow--indigo', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
+            'Carga': { icon: 'fa-cloud-upload-alt', class: 'node-glow--indigo', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
+            'Descarga': { icon: 'fa-cloud-download-alt', class: 'node-glow--emerald', color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
+            'Baja': { icon: 'fa-trash-alt', class: 'node-glow--rose', color: '#e11d48', bg: 'rgba(225, 29, 72, 0.1)' },
+            'Carpeta': { icon: 'fa-folder-plus', class: 'node-glow--amber', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' }
         };
 
         container.innerHTML = ''; 
@@ -434,28 +442,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         logs.forEach(log => {
-            const info = colors[log.action] || { icon: 'fa-info-circle', color: '#64748b', bg: 'rgba(100, 116, 139, 0.1)' };
-            const logCard = document.createElement('div');
-            logCard.className = 'log-item-monitor';
+            const info = config[log.action] || { icon: 'fa-bolt', class: 'node-glow--indigo', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' };
+            const timelineItem = document.createElement('div');
+            timelineItem.className = 'premium-timeline-item';
             
-            // Mapeo de campos desde API a UI
             const userDisplay = log.user_name || 'Sistema';
-            const targetDisplay = log.target_name || 'Objeto';
-            const logTime = log.created_at ? log.created_at.split(' ')[1] : 'N/D';
+            const targetDisplay = log.target_name || 'Accion Desconocida';
+            const logTime = log.created_at ? log.created_at.split(' ')[1] : '--:--';
 
-            logCard.innerHTML = `
-                <div class="status-badge-icon" style="background: ${info.bg}; color: ${info.color};">
+            timelineItem.innerHTML = `
+                <div class="timeline-node ${info.class}" style="background: ${info.bg}; color: ${info.color};">
                     <i class="fas ${info.icon}"></i>
                 </div>
-                <div class="flex-1 overflow-hidden">
-                    <div class="d-flex justify-between items-center mb-025">
-                        <span class="log-user-name">${userDisplay}</span>
-                        <span class="log-time-stamp">${logTime}</span>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <span class="timeline-user">${userDisplay}</span>
+                        <span class="timeline-time">${logTime}</span>
                     </div>
-                    <div class="log-target-text text-truncate">${targetDisplay}</div>
+                    <div class="timeline-body" title="${targetDisplay}">
+                        ${log.action}: ${targetDisplay}
+                    </div>
                 </div>
             `;
-            container.appendChild(logCard);
+            container.appendChild(timelineItem);
         });
     }
 
@@ -608,6 +617,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.querySelectorAll('[data-action="open-area"]').forEach(c => {
         c.onclick = () => {
+            // Si es un item de la sidebar, forzar el cambio de pestaña visual
+            if (c.classList.contains('catalog-tab-item')) {
+                switchTab('archivos', c);
+            }
+            
             if(areaScreen) areaScreen.classList.add('d-none');
             if(archivosGrid) archivosGrid.classList.remove('d-none');
             if (breadcrumb) {

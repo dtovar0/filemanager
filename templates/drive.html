@@ -29,24 +29,16 @@
         </div>
     </nav>
 
-    <div class="sidebar-section-label"><span class="label-text">Exploración</span></div>
+    <div class="sidebar-section-label"><span class="label-text">Archivos</span></div>
     <nav class="sidebar-nav">
-        <div class="nav-item catalog-tab-item" data-tab="archivos" id="nav-files-root">
-            <i class="fas fa-folder-open nav-item-icon"></i>
-            <span>Todos los Archivos</span>
+    {% if all_areas %}
+        {% for area in all_areas %}
+        <div class="nav-item catalog-tab-item" data-tab="archivos" data-action="open-area" data-area-name="{{ area.name }}">
+            <i class="fas {{ area.icon if area.icon.startswith('fa-') else 'fa-' + area.icon if area.icon else 'fa-folder' }} nav-item-icon"></i>
+            <span>{{ area.name }}</span>
         </div>
-        
-        {% if approved_platforms %}
-            <div class="sidebar-section-label sidebar-section-label--flat"><span class="label-text">Plataformas</span></div>
-            {% for plat in approved_platforms %}
-            <div class="nav-item catalog-tab-item plat-nav-item" 
-                 data-tab="archivos" 
-                 data-area-name="{{ plat.storage_path or plat.name }}">
-                <i class="fas {{ plat.icon or 'fa-layer-group' }} nav-item-icon"></i>
-                <span>{{ plat.name }}</span>
-            </div>
-            {% endfor %}
-        {% endif %}
+        {% endfor %}
+    {% endif %}
     </nav>
 
     <div class="flex-1"></div>
@@ -76,12 +68,7 @@
 
 {% block top_bar_right %}
     <div class="top-bar__actions">
-        <div class="dashboard-controls">
-            <button class="btn btn-ghost grid-btn active" data-view="grid"><i class="fas fa-th-large"></i></button>
-            <button class="btn btn-ghost grid-btn" data-view="list"><i class="fas fa-list"></i></button>
-        </div>
         <button class="theme-toggle-btn" id="themeToggle" data-action="toggle-theme" title="Cambiar tema"><i class="fas fa-moon"></i></button>
-        <div class="top-bar__divider"></div>
     </div>
 {% endblock %}
 
@@ -172,11 +159,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    </div>
-
-    </div>
+        </div> <!-- Fin dashboard-layout -->
+    </div> <!-- Fin view-inicio -->
 
     <!-- VISTA 2: EXPLORADOR DE ARCHIVOS PREMIUM -->
     <div id="view-archivos" class="catalog-view d-none">
@@ -185,7 +169,7 @@
         <div id="area-selector-screen" class="area-selector-pane animate-fade-in">
             <h2 class="pane-title--xl">Explorar Áreas</h2>
             <div class="nexus-area-grid">
-                {% for area in approved_areas %}
+                {% for area in all_areas %}
                 <div class="nexus-area-card" data-action="open-area" data-area-name="{{ area.name }}">
                     <div class="area-card__icon-box">
                         <i class="fas {{ area.icon or 'fa-folder' }}"></i>
@@ -197,30 +181,32 @@
             </div>
         </div>
 
-        <!-- Layout del Explorador Activo -->
-        <div id="archivos-grid" class="d-none nexus-explorer-layout">
+        <!-- Layout del Explorador Activo (80/20) -->
+        <div id="archivos-grid" class="d-none explorer-layout-master">
             
-            <!-- Contenedor de Items (Inyección JS) -->
-            <div id="explorer-container" class="explorer-main-area"></div>
+            <!-- Columna Principal: Explorador de Archivos (80%) -->
+            <div class="explorer-col-primary">
+                <div id="explorer-container" class="explorer-main-area"></div>
+            </div>
 
-            <!-- Sidebar de Gestión y Previsualización -->
-            <div class="nexus-management-sidebar">
+            <!-- Columna Derecha: Paneles (20%) -->
+            <div class="explorer-col-sidebar">
                 
-                <!-- Widget de Acciones Rápidas -->
-                <div class="nexus-action-card">
-                    <h5 class="management-label--mini">Acciones rápidas</h5>
+                <!-- Panel Superior: Acciones Rápidas (20% vertical) -->
+                <div class="sidebar-panel sidebar-panel--actions">
+                    <h5 class="management-label--mini">Acciones</h5>
                     <div class="search-wrapper--nexus">
                         <i class="fas fa-search search-wrapper__icon"></i>
                         <input type="text" id="file-search" class="nexus-search-input--premium" placeholder="Buscar en carpeta...">
                     </div>
-                    <div class="action-buttons-row">
-                        <button class="btn btn-primary--brand" id="trigger-upload"><i class="fas fa-cloud-upload-alt"></i> Subir</button>
-                        <button class="btn btn-ghost--brand" id="open-folder-modal"><i class="fas fa-folder-plus"></i> Nueva</button>
+                    <div class="sidebar-actions-row">
+                        <button class="btn btn-primary--brand btn--half" id="trigger-upload"><i class="fas fa-cloud-upload-alt"></i> Subir</button>
+                        <button class="btn btn-ghost--brand btn--half" id="open-folder-modal"><i class="fas fa-folder-plus"></i> Nueva</button>
                     </div>
                 </div>
 
-                <!-- Widget de Vista Previa Luxury -->
-                <div class="nexus-action-card nexus-action-card--preview">
+                <!-- Panel Inferior: Vista Previa / Detalle (80% vertical) -->
+                <div class="sidebar-panel sidebar-panel--detail">
                     <div class="preview-header">
                         <h5 class="management-label--mini">Vista Previa</h5>
                         <div id="detail-type-badge" class="type-badge">TIPO</div>
