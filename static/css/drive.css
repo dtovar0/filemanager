@@ -138,8 +138,10 @@
 
 .main-layout {
     padding: 0 !important;
-    height: calc(100vh - 72px); /* Assuming topbar is ~72px */
+    height: calc(100vh - 64px); 
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .catalog-container {
@@ -1699,27 +1701,29 @@
     align-items: center;
     padding: 1.5rem 1rem;
     border-radius: 20px;
-    background: var(--bg-card);
-    border: 1.5px solid transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     cursor: pointer;
     text-align: center;
     user-select: none;
-    opacity: 1 !important;
-    visibility: visible !important;
+    box-shadow: var(--shadow-luxury);
 }
 
 .explorer-item:hover {
-    transform: translateY(-5px);
-    background: var(--bg-hover);
-    border-color: var(--border-color);
-    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.05);
+    transform: translateY(-8px);
+    background: var(--bg-card);
+    border-color: var(--primary-color-alpha);
+    box-shadow: var(--shadow-active);
 }
 
 .explorer-item.selected {
-    background: var(--accent-indigo-bg);
+    background: rgba(99, 102, 241, 0.08);
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 1px var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color), var(--shadow-active);
+    transform: scale(0.98);
 }
 
 .explorer-icon-wrapper {
@@ -1728,8 +1732,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.75rem;
-    transition: transform 0.3s ease;
+    margin-bottom: 0.85rem;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .explorer-icon-wrapper i {
@@ -1948,99 +1952,91 @@
     width: 100%;
 }
 
+
 /* ==========================================================
-   NEXUS DRIVE - DESIGN SYSTEM (8PT STANDARD)
+
+/* ==========================================================
+   NEXUS DRIVE - DESIGN SYSTEM 2.0 (PREMIUM PARITY)
    ========================================================== */
 
-/* Layout & Containers */
-.dashboard-layout { display: flex; gap: 24px; height: 100%; }
-.dashboard-layout__primary { flex: 2.5; display: flex; flex-direction: column; gap: 24px; }
-.dashboard-layout__secondary { flex: 1; }
+/* Dashboard Master Layout (Parity with index.html) */
+.dashboard-layout-master { display: flex; gap: 24px; margin-top: 12px; align-items: flex-start; }
+.dashboard-left-charts { flex: 0 0 72%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.dashboard-right-activity { flex: 0 0 calc(28% - 24px); min-width: 320px; }
 
-.kpi-grid { display: grid; gap: 24px; grid-template-columns: repeat(4, 1fr); }
-.kpi-grid__item--luxury { 
-    display: flex; align-items: center; gap: 16px; padding: 16px; 
-    background: var(--bg-card); border-radius: 20px; transition: all 0.3s ease;
+.stat-card-premium {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 24px;
+    height: 310px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* KPI Icons & Typography */
-.kpi-icon-box { 
-    width: 48px; height: 48px; border-radius: 14px; 
-    display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
-}
-.kpi-icon-box--emerald { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-.kpi-icon-box--indigo { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
-.kpi-icon-box--amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.kpi-icon-box--sky { background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
-
-.kpi-label--nano { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
-.kpi-value--xl { font-size: 1.5rem; font-weight: 900; color: var(--text-main); }
-
-/* Charts & Lists */
-.charts-row { display: flex; gap: 24px; flex: 1; min-height: 0; }
-.charts-row__item { flex: 1; display: flex; flex-direction: column; min-height: 200px; }
-.chart-label--micro { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 16px; }
-.chart-canvas-wrapper { flex: 1; position: relative; }
-
-.monitor-label--header { font-size: 0.85rem; font-weight: 900; text-transform: uppercase; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
-.monitor-list { flex: 1; overflow-y: auto; }
-
-/* Dynamic Brand Elements */
-.logo-icon--dynamic { background: var(--portal-logo-bg, #6366f1) !important; transition: transform 0.3s ease; }
-.logo-icon__i--dynamic { color: var(--portal-icon-color, #ffffff) !important; }
-
-/* Breadcrumbs & Navigator */
-.nav-bar--unified { display: flex; align-items: center; gap: 16px; }
-.breadcrumb--dynamic { display: flex; align-items: center; font-size: 0.85rem; color: var(--text-muted); }
-
-.top-bar__actions { display: flex; align-items: center; gap: 16px; }
-.top-bar__divider { width: 1px; height: 24px; background: var(--border-color); }
-
-/* Explorer Pane */
-.area-selector-pane { padding: 24px; height: 100%; overflow-y: auto; }
-.pane-title--xl { font-size: 1.75rem; font-weight: 900; margin-bottom: 24px; }
-.area-card__icon-box { 
-    background: var(--primary-color); width: 44px; height: 44px; border-radius: 12px; 
-    display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 16px;
-}
-.area-card__title { font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
-.area-card__desc { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
-
-/* Management Sidebar */
-.nexus-explorer-layout { display: flex; flex: 1; overflow: hidden; }
-.management-label--mini { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
-
-.search-wrapper--nexus { position: relative; width: 100%; }
-.search-wrapper__icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
-.nexus-search-input--premium { 
-    width: 100% !important; padding-left: 40px !important; height: 44px; border-radius: 12px !important;
-    background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main);
+.stat-card-title-nexus {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
 }
 
-.action-buttons-row { display: flex; gap: 12px; }
-.btn-primary--brand { background: var(--primary-color) !important; color: white !important; flex: 1; }
-.btn-ghost--brand { background: var(--bg-hover) !important; border: 1px solid var(--border-color) !important; flex: 1; }
-
-/* Preview States */
-.preview-empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.4; gap: 16px; }
-.preview-empty-state__icon { font-size: 4rem; }
-.preview-empty-state__title { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; }
-
-.preview-active-content { display: flex; flex-direction: column; gap: 16px; height: 100%; }
-.preview-nexus-box--luxury { 
-    height: 180px; background: var(--bg-main); border-radius: 18px; 
-    border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: center;
+/* KPI Cards (Exact index.html colors) */
+.kpi-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.status-card-dash {
+    background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px;
+    padding: 1.5rem 1.25rem; display: flex; align-items: center; gap: 1rem;
+    min-height: 105px;
 }
-.preview-item-name { font-size: 1rem; font-weight: 900; text-align: center; margin: 0; }
-.preview-meta-grid { background: var(--bg-main); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.meta-row { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; }
-.preview-actions-footer { display: flex; gap: 12px; margin-top: auto; }
 
-.btn-success--premium { background: #10b981 !important; color: white !important; flex: 1; }
-.btn-danger--premium { background: #ef4444 !important; color: white !important; flex: 1; }
+.icon-bg-emerald { background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important; }
+.icon-bg-indigo { background: rgba(99, 102, 241, 0.1) !important; color: var(--primary-color) !important; }
+.icon-bg-amber { background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; }
+.icon-bg-blue { background: rgba(14, 165, 233, 0.1) !important; color: #0ea5e9 !important; }
 
-/* Modal Luxury */
-.modal-content--center { width: 400px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10001; box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important; }
-.modal-title--large { font-size: 1.25rem; font-weight: 900; margin-bottom: 16px; }
-.modal-buttons-row { display: flex; gap: 16px; margin-top: 16px; }
+/* Monitor Status Pulse */
+.monitor-status-pulse { 
+    width: 8px; height: 8px; background: #10b981; border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    animation: statusPulse 2s infinite; 
+}
 
+@keyframes statusPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Layout High-Density Fill */
+.catalog-view { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Explorer Refinements */
+.nexus-explorer-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+.explorer-main-area { 
+    flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+    gap: 1.25rem; padding: 1.5rem; overflow-y: auto; align-content: start;
+}
+
+.nexus-management-sidebar { 
+    width: 320px; display: flex; flex-direction: column; gap: 1.25rem;
+    padding: 1.5rem; border-left: 1px solid var(--border-color);
+    background: color-mix(in srgb, var(--bg-main) 95%, white 5%);
+}
+
+.management-label--mini { 
+    font-size: 0.65rem; font-weight: 800; color: var(--text-muted); 
+    text-transform: uppercase; margin-bottom: 0.75rem; display: block;
+}
+
+/* Scrollbar Premium Integration */
+.monitor-list::-webkit-scrollbar,
+.log-list-dynamic::-webkit-scrollbar,
+.explorer-main-area::-webkit-scrollbar { width: 4px; }
+.monitor-list::-webkit-scrollbar-thumb,
+.log-list-dynamic::-webkit-scrollbar-thumb,
+.explorer-main-area::-webkit-scrollbar-thumb { 
+    background: var(--border-color); border-radius: 10px; 
+}

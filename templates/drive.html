@@ -3,10 +3,7 @@
 {% block title %}Nexus Drive - Explorador Premium{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/drive.css') }}?v=15">
-<style nonce="{{ csp_nonce() }}">
-    /* Estilos estructurales críticos recuperados */
-<link rel="stylesheet" href="{{ url_for('static', filename='css/drive.css') }}?v=18">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/drive.css') }}?v=20">
 {% endblock %}
 
 {% block sidebar %}
@@ -44,7 +41,7 @@
             {% for plat in approved_platforms %}
             <div class="nav-item catalog-tab-item plat-nav-item" 
                  data-tab="archivos" 
-                 data-area-name="{{ plat.name }}">
+                 data-area-name="{{ plat.storage_path or plat.name }}">
                 <i class="fas {{ plat.icon or 'fa-layer-group' }} nav-item-icon"></i>
                 <span>{{ plat.name }}</span>
             </div>
@@ -83,8 +80,8 @@
             <button class="btn btn-ghost grid-btn active" data-view="grid"><i class="fas fa-th-large"></i></button>
             <button class="btn btn-ghost grid-btn" data-view="list"><i class="fas fa-list"></i></button>
         </div>
+        <button class="theme-toggle-btn" id="themeToggle" data-action="toggle-theme" title="Cambiar tema"><i class="fas fa-moon"></i></button>
         <div class="top-bar__divider"></div>
-        <button class="theme-toggle-btn" id="themeToggle"><i class="fas fa-moon"></i></button>
     </div>
 {% endblock %}
 
@@ -99,65 +96,92 @@
 
 <div id="catalog-root" class="catalog-container">
     
-    <!-- VISTA 1: DASHBOARD -->
+    <!-- VISTA 1: DASHBOARD DE ALTA DENSIDAD (PARIDAD TOTAL) -->
+    <!-- VISTA 1: DASHBOARD DE ALTA DENSIDAD (UNIFICADO) -->
     <div id="view-inicio" class="catalog-view animate-fade-in p-2">
-        <div class="dashboard-layout">
+        <div class="dashboard-layout" style="display: flex; gap: 24px; min-height: 100%; align-items: stretch !important;">
             
-            <!-- Columna de Gráficas -->
-            <div class="dashboard-layout__primary">
+            <!-- Columna Principal: KPIs + Gráficas -->
+            <div class="dashboard-layout__primary" style="flex: 0 0 72%; display: flex; flex-direction: column; gap: 32px; min-width: 0;">
                 
-                <!-- KPIs -->
-                <div class="kpi-grid">
-                    {% for label, id, icon, color_cls in [
-                        ('Áreas', 'kpi-areas', 'fa-sitemap', 'emerald'),
-                        ('Plataformas', 'kpi-platforms', 'fa-layer-group', 'indigo'),
-                        ('Descargas', 'kpi-downloads', 'fa-download', 'amber'),
-                        ('Subidas', 'kpi-uploads', 'fa-upload', 'sky')
-                    ] %}
-                    <div class="nexus-action-card kpi-grid__item--luxury">
-                        <div class="kpi-icon-box kpi-icon-box--{{ color_cls }}">
-                            <i class="fas {{ icon }}"></i>
-                        </div>
-                        <div class="kpi-info-box">
-                            <span class="kpi-label--nano">{{ label }}</span>
-                            <div id="{{ id }}" class="kpi-value--xl">0</div>
+                <!-- KPIs Grid (Compacto en la parte superior) -->
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                    <div class="status-card-dash">
+                        <div class="card-icon-dash icon-bg-emerald"><i class="fas fa-sitemap"></i></div>
+                        <div class="kpi-text-col">
+                            <div class="kpi-value-new">Áreas</div>
+                            <div id="kpi-areas" class="kpi-label-new">0</div>
                         </div>
                     </div>
-                    {% endfor %}
+                    <div class="status-card-dash">
+                        <div class="card-icon-dash icon-bg-indigo"><i class="fas fa-layer-group"></i></div>
+                        <div class="kpi-text-col">
+                            <div class="kpi-value-new">Plataformas</div>
+                            <div id="kpi-platforms" class="kpi-label-new">0</div>
+                        </div>
+                    </div>
+                    <div class="status-card-dash">
+                        <div class="card-icon-dash icon-bg-amber"><i class="fas fa-download"></i></div>
+                        <div class="kpi-text-col">
+                            <div class="kpi-value-new">Descargas</div>
+                            <div id="kpi-downloads" class="kpi-label-new">0</div>
+                        </div>
+                    </div>
+                    <div class="status-card-dash">
+                        <div class="card-icon-dash icon-bg-blue"><i class="fas fa-upload"></i></div>
+                        <div class="kpi-text-col">
+                            <div class="kpi-value-new">Subidas</div>
+                            <div id="kpi-uploads" class="kpi-label-new">0</div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Gráficas Core -->
-                <div class="charts-row">
-                    <div class="nexus-action-card charts-row__item">
-                        <h4 class="chart-label--micro">Actividad de Descargas</h4>
-                        <div class="chart-canvas-wrapper">
+                <!-- Bloque de Gráficas (Apiladas Verticalmente) -->
+                <div class="charts-row" style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                    <div class="stat-card-premium">
+                        <div class="d-flex justify-between items-center mb-075">
+                            <h2 class="stat-card-title-nexus">Actividad de Descargas</h2>
+                        </div>
+                        <div class="chart-stage-container" style="height: 220px; position: relative;">
                             <canvas id="downloadChart"></canvas>
                         </div>
                     </div>
-                    <div class="nexus-action-card charts-row__item">
-                        <h4 class="chart-label--micro">Actividad de Subidas</h4>
-                        <div class="chart-canvas-wrapper">
+                    <div class="stat-card-premium">
+                        <div class="d-flex justify-between items-center mb-075">
+                            <h2 class="stat-card-title-nexus">Actividad de Subidas</h2>
+                        </div>
+                        <div class="chart-stage-container" style="height: 220px; position: relative;">
                             <canvas id="uploadChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Columna de Auditoría -->
-            <div class="dashboard-layout__secondary">
-                <div class="nexus-action-card h-full">
-                    <h4 class="monitor-label--header">Monitor de Sistema</h4>
-                    <div id="activity-log-monitor" class="monitor-list">
-                        <!-- Logs dinámicos -->
+            <!-- Columna Secundaria: Monitor de Actividad -->
+            <div class="dashboard-layout__secondary" style="flex: 0 0 calc(28% - 24px); min-width: 320px; display: flex; flex-direction: column;">
+                <div class="activity-monitor-panel" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; flex: 1;">
+                    <div class="monitor-header-status" style="display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px;">
+                        <div class="d-flex items-center gap-075">
+                            <i class="fas fa-satellite-dish" style="color: var(--primary-color);"></i>
+                            <h2 class="stat-card-title-nexus">Monitor de Sistema</h2>
+                        </div>
+                        <span class="monitor-status-pulse"></span>
+                    </div>
+                    <div id="activity-log-monitor" class="log-list-dynamic" style="flex: 1; overflow-y: auto; max-height: 580px;">
+                        <!-- Inyección vía drive.js -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
 
-    <!-- VISTA 2: EXPLORADOR -->
+    </div>
+
+    <!-- VISTA 2: EXPLORADOR DE ARCHIVOS PREMIUM -->
     <div id="view-archivos" class="catalog-view d-none">
         
+        <!-- Pantalla de Selección de Áreas -->
         <div id="area-selector-screen" class="area-selector-pane animate-fade-in">
             <h2 class="pane-title--xl">Explorar Áreas</h2>
             <div class="nexus-area-grid">
@@ -167,21 +191,27 @@
                         <i class="fas {{ area.icon or 'fa-folder' }}"></i>
                     </div>
                     <h4 class="area-card__title">{{ area.name }}</h4>
-                    <p class="area-card__desc">Acceso a recursos de {{ area.name }}.</p>
+                    <p class="area-card__desc">Acceso a recursos compartidos de {{ area.name }}.</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
 
+        <!-- Layout del Explorador Activo -->
         <div id="archivos-grid" class="d-none nexus-explorer-layout">
+            
+            <!-- Contenedor de Items (Inyección JS) -->
             <div id="explorer-container" class="explorer-main-area"></div>
 
+            <!-- Sidebar de Gestión y Previsualización -->
             <div class="nexus-management-sidebar">
+                
+                <!-- Widget de Acciones Rápidas -->
                 <div class="nexus-action-card">
                     <h5 class="management-label--mini">Acciones rápidas</h5>
                     <div class="search-wrapper--nexus">
                         <i class="fas fa-search search-wrapper__icon"></i>
-                        <input type="text" id="file-search" class="nexus-search-input--premium" placeholder="Buscar...">
+                        <input type="text" id="file-search" class="nexus-search-input--premium" placeholder="Buscar en carpeta...">
                     </div>
                     <div class="action-buttons-row">
                         <button class="btn btn-primary--brand" id="trigger-upload"><i class="fas fa-cloud-upload-alt"></i> Subir</button>
@@ -189,26 +219,46 @@
                     </div>
                 </div>
 
+                <!-- Widget de Vista Previa Luxury -->
                 <div class="nexus-action-card nexus-action-card--preview">
-                    <h5 class="management-label--mini">Vista Previa</h5>
+                    <div class="preview-header">
+                        <h5 class="management-label--mini">Vista Previa</h5>
+                        <div id="detail-type-badge" class="type-badge">TIPO</div>
+                    </div>
                     
+                    <!-- Estado Vacío -->
                     <div id="details-empty" class="preview-empty-state">
-                        <i class="fas fa-fingerprint preview-empty-state__icon"></i>
+                        <div class="pulsing-icon-container">
+                            <i class="fas fa-fingerprint preview-empty-state__icon"></i>
+                        </div>
                         <h4 class="preview-empty-state__title">Sin Selección</h4>
                     </div>
 
+                    <!-- Contenido de Detalle -->
                     <div id="details-content" class="preview-active-content d-none">
-                        <div id="detail-preview-container" class="preview-nexus-box--luxury">
+                        <div id="detail-preview-container" class="preview-nexus-box preview-nexus-box--luxury">
                             <i class="fas fa-file-alt" id="detail-icon-large"></i>
                         </div>
-                        <h3 id="detail-name" class="preview-item-name">Nombre</h3>
+                        <h3 id="detail-name" class="preview-item-name">Nombre del Archivo</h3>
+                        
                         <div class="preview-meta-grid">
-                            <div class="meta-row"><span>Tamaño</span><span id="detail-size">--</span></div>
-                            <div class="meta-row"><span>Fecha</span><span id="detail-date">--</span></div>
+                            <div class="meta-row">
+                                <span class="meta-label">Tamaño</span>
+                                <span id="detail-size" class="meta-value">--</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label">Última Modificación</span>
+                                <span id="detail-date" class="meta-value">--</span>
+                            </div>
                         </div>
+
                         <div class="preview-actions-footer">
-                            <button class="btn btn-success--premium" id="btn-download-main">Descargar</button>
-                            <button class="btn btn-danger--premium" id="btn-delete-main">Borrar</button>
+                            <button class="btn btn-success--premium" id="btn-download-main">
+                                <i class="fas fa-download"></i> Descargar
+                            </button>
+                            <button class="btn btn-danger--premium" id="btn-delete-main">
+                                <i class="fas fa-trash-alt"></i> Borrar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -217,15 +267,28 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal de Carpeta Corregido -->
 <div id="newFolderModal" class="modal-overlay d-none">
-    <div class="nexus-action-card modal-content--center animate-fade-in">
-        <h3 class="modal-title--large">Nueva Carpeta</h3>
-        <input type="text" id="newFolderName" class="nexus-search-input--premium" placeholder="Nombre...">
+    <div class="nexus-action-card modal-content--center animate-fade-in shadow-luxury">
+        <h3 class="modal-title--large">Crear Nueva Carpeta</h3>
+        <p class="modal-desc--small">Define el nombre del nuevo directorio en esta ubicación.</p>
+        <div class="modal-input-wrapper">
+            <input type="text" id="newFolderName" class="nexus-search-input--premium" placeholder="Nombre de carpeta...">
+        </div>
         <div class="modal-buttons-row">
             <button class="btn btn-ghost--brand" onclick="document.getElementById('newFolderModal').classList.add('d-none')">Cancelar</button>
-            <button id="confirm-new-folder" class="btn btn-primary--brand">Crear</button>
+            <button id="confirm-new-folder" class="btn btn-primary--brand">Crear Carpeta</button>
         </div>
+    </div>
+</div>
+
+<!-- Menú Contextual Luxury -->
+<div id="context-menu" class="context-menu d-none">
+    <div class="context-menu-item" id="ctx-download">
+        <i class="fas fa-download"></i> <span>Descargar</span>
+    </div>
+    <div class="context-menu-item item-delete" id="ctx-delete">
+        <i class="fas fa-trash-alt"></i> <span>Eliminar</span>
     </div>
 </div>
 
@@ -234,5 +297,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/drive.js') }}?v=18" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/drive.js') }}?v=20" nonce="{{ csp_nonce() }}"></script>
 {% endblock %}

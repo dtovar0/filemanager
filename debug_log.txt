@@ -689,3 +689,6 @@
 [2026-04-15 18:41:42.548323] RESPUESTA EXITOSA: 0 items enviados para Respaldos
 [2026-04-15 18:44:03.033260] RESPUESTA EXITOSA: 0 items enviados para Respaldos
 [2026-04-15 18:48:12.205169] RESPUESTA EXITOSA: 0 items enviados para Respaldos
+[2026-04-16 01:19:59.202266] RESPUESTA EXITOSA: 7 items enviados para Infraestructura/Respaldos
+[2026-04-16 01:20:10.326378] RESPUESTA EXITOSA: 1 items enviados para Infraestructura
+[2026-04-16 01:20:11.638058] RESPUESTA EXITOSA: 1 items enviados para Infraestructura
