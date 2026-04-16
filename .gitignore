@@ -11,7 +11,8 @@ __pycache__/
 *.pyc
 instance/
 .pytest_cache/
-storage/
+storage/*
+!storage/.gitkeep
 ui_kit/
 .codex
 secret.key
