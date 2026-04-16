@@ -14,5 +14,4 @@ instance/
 storage/
 ui_kit/
 .codex
-docs/
 # === FIN GITIGNORE ===
