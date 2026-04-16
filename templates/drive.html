@@ -200,81 +200,45 @@
 
             <!-- Columna Derecha: Paneles (20%) -->
             <div class="explorer-col-sidebar">
-                
-                <!-- Panel Superior: Acciones Rápidas (20% vertical) -->
+                <!-- Tarjeta de Acciones Críticas -->
                 <div class="sidebar-panel sidebar-panel--actions">
-                    <h5 class="management-label--mini">Acciones de Gestión</h5>
+                    <span class="management-label--mini">Acciones de Gestión</span>
+                    
+                    <!-- Buscador Nexus -->
                     <div class="search-wrapper--nexus">
                         <i class="fas fa-search search-wrapper__icon"></i>
                         <input type="text" id="file-search" class="nexus-search-input--premium" placeholder="Buscar en carpeta...">
                     </div>
+
+                    <!-- Botonera de Gestión Real -->
                     <div class="sidebar-actions-row">
-                        <button class="btn btn-primary--brand btn--half" id="trigger-upload">
-                            <div class="btn-icon-box"><i class="fas fa-cloud-upload-alt"></i></div> Subir
+                        <button id="trigger-upload" class="btn">
+                            <div class="btn-icon-box"><i class="fas fa-cloud-upload-alt"></i></div>
+                            Subir
                         </button>
-                        <button class="btn btn-ghost--brand btn--half" id="open-folder-modal">
-                            <div class="btn-icon-box"><i class="fas fa-folder-plus"></i></div> Nueva
+                        <button id="open-folder-modal" class="btn">
+                            <div class="btn-icon-box"><i class="fas fa-folder-plus"></i></div>
+                            Nueva
                         </button>
                     </div>
                 </div>
 
-                <!-- Panel Inferior: Vista Previa / Detalle (80% vertical) -->
+                <!-- Tarjeta de Ficha Técnica (Inteligencia de Datos) -->
                 <div class="sidebar-panel sidebar-panel--detail">
-                    <div class="preview-header">
-                        <h5 class="management-label--mini">Ficha Técnica</h5>
-                    </div>
+                    <span class="management-label--mini">Ficha Técnica</span>
                     
                     <!-- Estado Vacío Premium -->
                     <div id="details-empty" class="empty-state-luxury d-flex">
-                        <div class="empty-state-luxury__content">
-                            <div class="empty-state-luxury__icon-box">
-                                <i class="fas fa-fingerprint"></i>
-                            </div>
-                            <h3 class="empty-state-luxury__title">Nexus Intelligence</h3>
-                            <p class="empty-state-luxury__text">Selecciona un activo para desplegar el análisis de metadatos.</p>
-                            <div class="empty-state-luxury__badge">Esperando Selección...</div>
+                        <div class="empty-state-luxury__icon-box">
+                            <i class="fas fa-fingerprint"></i>
                         </div>
+                        <h3 class="empty-state-luxury__title">Nexus Intelligence</h3>
+                        <p class="empty-state-luxury__text">Selecciona un activo para desplegar el análisis de metadatos.</p>
+                        <div class="empty-state-luxury__badge">Esperando Selección...</div>
                     </div>
 
-                    <!-- Contenido de Detalle -->
-                    <div id="details-content" class="preview-active-content d-none">
-                        <div id="detail-preview-container" class="preview-nexus-box--luxury">
-                            <i class="fas fa-file-alt" id="detail-icon-large"></i>
-                        </div>
-
-                        <h3 id="detail-name" class="preview-item-name text-center">Nombre del Archivo</h3>
-                        
-                        <div class="w-full mb-1">
-                            <div id="detail-type-badge" class="type-badge">TIPO ARCHIVO</div>
-                        </div>
-
-                        <!-- Ficha Técnica Agrupada -->
-                        <div class="technical-datasheet-nexus">
-                            <div class="technical-row">
-                                <div class="btn-icon-box"><i class="fas fa-weight-hanging"></i></div>
-                                <div class="tech-info">
-                                    <span class="tech-label">Tamaño del Activo</span>
-                                    <span id="detail-size" class="tech-value">--</span>
-                                </div>
-                            </div>
-                            <div class="tech-divider"></div>
-                            <div class="technical-row">
-                                <div class="btn-icon-box"><i class="fas fa-history"></i></div>
-                                <div class="tech-info">
-                                    <span class="tech-label">Última Modificación</span>
-                                    <span id="detail-date" class="tech-value">--</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="preview-actions-footer">
-                            <button class="btn btn-success--premium" id="btn-download-main">
-                                <div class="btn-icon-box"><i class="fas fa-download"></i></div> Descargar
-                            </button>
-                            <button class="btn btn-danger--premium" id="btn-delete-main">
-                                <div class="btn-icon-box"><i class="fas fa-trash-alt"></i></div> Borrar
-                            </button>
-                        </div>
+                    <!-- Contenedor de Ficha Técnica Dinámica (Vaciado para inyección segura) -->
+                    <div id="details-content" class="d-none" style="width: 100%;">
                     </div>
                 </div>
             </div>

@@ -20,19 +20,19 @@ const NexusAPI = {
 
 const FileIcons = {
     map: {
-        'png': { type: 'Imagen PNG', icon: 'fa-file-image', color: '#10b981', is_img: true },
-        'jpg': { type: 'Imagen JPG', icon: 'fa-file-image', color: '#10b981', is_img: true },
-        'jpeg': { type: 'Imagen JPEG', icon: 'fa-file-image', color: '#10b981', is_img: true },
-        'gif': { type: 'Imagen GIF', icon: 'fa-file-image', color: '#10b981', is_img: true },
-        'webp': { type: 'Imagen WebP', icon: 'fa-file-image', color: '#10b981', is_img: true },
+        'png': { type: 'Imagen PNG', icon: 'fa-file-image', color: '#6366f1', is_img: true },
+        'jpg': { type: 'Imagen JPG', icon: 'fa-file-image', color: '#6366f1', is_img: true },
+        'jpeg': { type: 'Imagen JPEG', icon: 'fa-file-image', color: '#6366f1', is_img: true },
+        'gif': { type: 'Imagen GIF', icon: 'fa-file-image', color: '#6366f1', is_img: true },
+        'webp': { type: 'Imagen WebP', icon: 'fa-file-image', color: '#6366f1', is_img: true },
         'pdf': { type: 'Documento PDF', icon: 'fa-file-pdf', color: '#ef4444' },
         'doc': { type: 'Documento Word', icon: 'fa-file-word', color: '#3b82f6' },
         'docx': { type: 'Documento Word', icon: 'fa-file-word', color: '#3b82f6' },
-        'xls': { type: 'Hoja de Cálculo', icon: 'fa-file-excel', color: '#059669' },
-        'xlsx': { type: 'Hoja de Cálculo', icon: 'fa-file-excel', color: '#059669' },
+        'xls': { type: 'Hoja de Cálculo', icon: 'fa-file-excel', color: '#10b981' },
+        'xlsx': { type: 'Hoja de Cálculo', icon: 'fa-file-excel', color: '#10b981' },
         'zip': { type: 'Comprimido ZIP', icon: 'fa-file-zipper', color: '#f59e0b' },
         'rar': { type: 'Comprimido RAR', icon: 'fa-file-zipper', color: '#f59e0b' },
-        'txt': { type: 'Texto Plano', icon: 'fa-file-lines', color: '#6b7280' },
+        'txt': { type: 'Texto Plano', icon: 'fa-file-lines', color: '#64748b' },
         'mp4': { type: 'Video MP4', icon: 'fa-file-video', color: '#8b5cf6' },
         'mov': { type: 'Video MOV', icon: 'fa-file-video', color: '#8b5cf6' },
         'json': { type: 'Datos JSON', icon: 'fa-file-code', color: '#6366f1' }
@@ -228,90 +228,103 @@ document.addEventListener('DOMContentLoaded', () => {
                 const seg = document.createElement('span'); seg.className = 'path-segment'; seg.innerText = p;
                 seg.onclick = () => explorer.loadFiles(parts.slice(0, i + 1).join('/'));
                 breadcrumb.appendChild(seg);
-                if (i < parts.length - 1) breadcrumb.insertAdjacentHTML('beforeend', ' <i class="fas fa-chevron-right fs-xs opacity-30 mx-05"></i> ');
+                if (i < parts.length - 1) breadcrumb.insertAdjacentHTML('beforeend', `
+                    <div class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></div>
+                `);
             });
         },
         onFileSelect: async (item, info) => {
             const empty = document.getElementById('details-empty');
             const content = document.getElementById('details-content');
             
-            // SI NO HAY ITEM (Deselección), mostrar estado vacío y ocultar ficha
             if (!item) {
                 if (empty) { empty.classList.remove('d-none'); empty.classList.add('d-flex'); }
                 if (content) { content.classList.add('d-none'); content.classList.remove('d-flex'); }
                 return;
             }
 
-            // SI HAY ITEM, ocultar estado vacío y mostrar ficha
-            if (empty) {
-                empty.classList.add('d-none');
-                empty.classList.remove('d-flex');
-            }
+            if (empty) { empty.classList.add('d-none'); empty.classList.remove('d-flex'); }
+            
             if (content) {
                 content.classList.remove('d-none');
                 content.classList.add('d-flex');
                 
-                // Restauración de Metadatos y Diseño Premium
-                document.getElementById('detail-name').innerText = item.name;
-                
-                const badge = document.getElementById('detail-type-badge');
-                if (badge) {
-                    badge.innerText = info.type.toUpperCase();
-                    // Fondo dinámico según tipo con opacidad optimizada
-                    badge.style.background = info.color + '25';
-                    // Texto en negro profundo para legibilidad total solicitado
-                    badge.style.color = '#111827'; 
-                    badge.style.border = `1.5px solid ${info.color}45`;
-                }
-                document.getElementById('detail-size').innerText = item.size || '--';
-                document.getElementById('detail-date').innerText = item.ctime ? new Date(item.ctime * 1000).toLocaleString('es-MX', { 
-                    day: '2-digit', month: '2-digit', year: 'numeric', 
-                    hour: '2-digit', minute: '2-digit', second: '2-digit',
-                    hour12: true 
-                }) : '--';
+                // Limpieza de contenedor principal con orden estrictamente solicitado:
+                content.innerHTML = `
+                    <div class="preview-active-content">
+                        <!-- 1. Icono / Vista Previa -->
+                        <div class="preview-nexus-frame" id="nexus-preview-frame">
+                            <i id="preview-placeholder-icon" class="fas ${info.icon}" style="font-size: 4.5rem; color: ${info.color}; opacity: 0.8;"></i>
+                        </div>
 
-                // 1. Elementos y Color
-                const previewBox = document.getElementById('detail-preview-container');
-                const previewIcon = document.getElementById('detail-icon-large');
-                
-                // Color dinámico según tipo
-                previewIcon.style.color = info.color;
-                previewIcon.className = 'fas ' + info.icon;
-                previewIcon.style.display = 'block';
-                previewIcon.classList.remove('opacity-40');
-                
-                // Limpieza de imágenes previas
-                const oldImgs = previewBox.querySelectorAll('img');
-                oldImgs.forEach(img => img.remove());
+                        <!-- 2. Nombre -->
+                        <div class="preview-item-name">${item.name}</div>
 
-                // 2. Motor de Previsualización (Inyección Directa e Incondicional)
+                        <!-- 3. Etiqueta (Badge) -->
+                        <div class="file-nexus-badge" style="background: ${info.color}15 !important; border-color: ${info.color}30 !important; color: ${info.color} !important;">
+                            ${info.type}
+                        </div>
+
+                        <!-- 4. Detalle del Archivo (Peso y Fecha) -->
+                        <div class="datasheet-nexus-grid">
+                            <div class="datasheet-nexus-row">
+                                <div class="datasheet-nexus-icon" style="background: ${info.color} !important;">
+                                    <i class="fas fa-weight-hanging"></i>
+                                </div>
+                                <div class="datasheet-nexus-info">
+                                    <span class="datasheet-nexus-label">Tamaño del Activo</span>
+                                    <span class="datasheet-nexus-value">${item.size || '--'}</span>
+                                </div>
+                            </div>
+
+                            <div class="datasheet-nexus-row">
+                                <div class="datasheet-nexus-icon" style="background: #3b82f6 !important;">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="datasheet-nexus-info">
+                                    <span class="datasheet-nexus-label">Última Modificación</span>
+                                    <span class="datasheet-nexus-value">
+                                        ${item.ctime ? new Date(item.ctime * 1000).toLocaleString('es-MX', { 
+                                            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true 
+                                        }) : '--'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Botones (Download y Borrar) -->
+                        <div class="preview-actions-footer">
+                            <button class="btn" id="detail-btn-download" style="--btn-accent: #10b981;">
+                                <div class="btn-icon-box" style="margin-right: 0.5rem; width: 24px; height: 24px;"><i class="fas fa-download" style="font-size: 0.7rem;"></i></div>
+                                Descargar
+                            </button>
+                            <button class="btn" id="detail-btn-delete" style="--btn-accent: #ef4444;">
+                                <div class="btn-icon-box" style="margin-right: 0.5rem; width: 24px; height: 24px;"><i class="fas fa-trash-alt" style="font-size: 0.7rem;"></i></div>
+                                Borrar
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Re-vincular eventos a los nuevos botones
+                document.getElementById('detail-btn-download')?.addEventListener('click', () => downloadSelected());
+                document.getElementById('detail-btn-delete')?.addEventListener('click', () => deleteSelected());
+
+                // Motor de Previsualización Inteligente
                 if (info.is_img) {
                     const currentPathClean = explorer.currentPath.replace(/\/+$/, '');
                     const fullItemPath = `${currentPathClean}/${item.name}`;
-                    
-                    // Solo mandamos el parámetro si realmente tenemos una clave almacenada
                     let previewUrl = `/api/download?path=${encodeURIComponent(fullItemPath)}`;
-                    if (explorer.lastPassword) {
-                        previewUrl += `&password=${encodeURIComponent(explorer.lastPassword)}`;
-                    }
+                    if (explorer.lastPassword) previewUrl += `&password=${encodeURIComponent(explorer.lastPassword)}`;
                     
-                    // Ocultamos el icono proactivamente para la imagen
-                    previewIcon.style.display = 'none';
-
                     const img = document.createElement('img');
                     img.src = previewUrl;
-                    img.className = 'animate-fade-in';
-                    img.style.cssText = 'max-height: 150px; width: auto; max-width: 100%; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: block;';
-                    
-                    img.onerror = () => {
-                        // Si la imagen real falla, restauramos el icono con una señal visual
-                        img.remove();
-                        previewIcon.style.display = 'block';
-                        previewIcon.style.color = info.color;
-                        previewIcon.classList.add('opacity-40');
+                    img.onload = () => {
+                        const frame = document.getElementById('nexus-preview-frame');
+                        const placeholder = document.getElementById('preview-placeholder-icon');
+                        if (placeholder) placeholder.remove();
+                        if (frame) frame.appendChild(img);
                     };
-                    
-                    previewBox.appendChild(img);
                 }
             }
         }
