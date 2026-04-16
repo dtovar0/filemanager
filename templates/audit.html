@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}Auditoría de Sistema | {{ portal_settings.portal_name or 'Portal TI' }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/audit.css') }}?v=11">
+<style>
+    /* TAMAÑOS FIJOS AUDITORIA */
+    .modern-table {
+        table-layout: fixed !important;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .w-15 { width: 15% !important; }
+    .w-20 { width: 20% !important; }
+    .w-25 { width: 25% !important; }
+    .w-30 { width: 30% !important; }
+    .w-35 { width: 35% !important; }
+    .w-40 { width: 40% !important; }
+
+    .audit-row td {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        padding: 12px 16px !important;
+        vertical-align: middle;
+        height: 64px !important; /* Altura fija innegociable */
+    }
+
+    .modern-table thead tr {
+        height: 50px !important;
+    }
+
+    /* Evitar que el navegador estire las filas */
+    .modern-table {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    .audit-table-wrapper {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bg-input);
+        min-height: 520px;
+        display: block !important;
+        overflow-y: auto;
+    }
+
+    /* PAGINACION PREMIUM */
+    .pagination-btn {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 6px 16px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+        background: var(--dash-accent, #6366f1);
+        color: white !important;
+        border-color: var(--dash-accent, #6366f1);
+        transform: translateY(-2px);
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item" data-action="go-home">Inicio</span>
+<span>/</span>
+<span class="breadcrumb-item">Sistema</span>
+<span>/</span>
+<span class="breadcrumb-item active">Auditoría</span>
+{% endblock %}
+
+{% block content %}
+<div class="settings-page-container w-full h-full d-flex flex-direction-column">
+    <!-- Premium Tab Navigation (Outside the card, like General) -->
+    <div class="settings-tabs mb-0">
+        <a href="{{ url_for('admin.audit_view', type='admin') }}" class="settings-tab {% if log_type == 'admin' %}active{% endif %}">
+            <i class="fas fa-shield-halved"></i> Auditoría Admin
+        </a>
+        <a href="{{ url_for('admin.audit_view', type='drive') }}" class="settings-tab {% if log_type == 'drive' %}active{% endif %}">
+            <i class="fas fa-folder-tree"></i> Actividad Drive
+        </a>
+    </div>
+
+    <!-- Content Container (The "White Case") -->
+    <div id="generalTab" class="tab-content active h-full" style="padding: 0; border-top: none;">
+        <div class="settings-card h-full d-flex flex-direction-column" style="border-radius: 0 0 20px 20px; border: 1px solid var(--border-color); background: var(--bg-card); padding: 1.5rem; flex: 1;">
+            
+            <!-- Header INSIDE the container (Search Bar) -->
+            <div class="d-flex justify-between items-center mb-15 gap-2">
+                <div class="search-container flex-1" style="max-width: 450px;">
+                    <div class="search-input-icon text-muted">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <input type="text" id="auditSearchInput" class="w-full search-input-with-icon js-audit-search" 
+                           placeholder="Buscar en este historial de {{ 'administración' if log_type == 'admin' else 'actividad de archivos' }}...">
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="window.location.reload()" title="Refrescar">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <!-- Aquí podrían ir filtros adicionales -->
+                </div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="table-responsive flex-1 audit-table-wrapper">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th class="w-15">FECHA Y HORA</th>
+                            <th class="w-25">USUARIO</th>
+                            {% if log_type == 'admin' %}
+                            <th class="w-15">ENTIDAD</th>
+                            <th class="w-15">ACCIÓN</th>
+                            <th class="w-30">DETALLES</th>
+                            {% else %}
+                            <th class="w-40">ARCHIVO/CARPETA</th>
+                            <th class="w-20">OPERACIÓN</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr class="audit-row">
+                            <td class="td-datetime">
+                                <div class="fw-700 text-primary fs-sm">{{ log.created_at.strftime('%d/%m/%Y') }}</div>
+                                <div class="text-muted fs-xs">{{ log.created_at.strftime('%H:%M:%S') }}</div>
+                            </td>
+                            <td>
+                                <div class="user-info-stack">
+                                    <span class="user-name fw-700 fs-sm text-primary">{{ log.user_name or 'Sistema' }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if log_type == 'admin' %}
+                                <div class="entity-info-stack">
+                                    <span class="entity-name fw-700 fs-sm">{{ log.target_name or 'N/A' }}</span>
+                                    <span class="entity-type text-muted fs-xs">{{ log.target_type or 'General' }}</span>
+                                </div>
+                                {% else %}
+                                <div class="entity-info-stack">
+                                    {% set f_name = log.file_name or 'Desconocido' %}
+                                    {% set f_path = log.file_path or 'Ruta no disponible' %}
+                                    <span class="entity-name fw-700 fs-sm" title="{{ f_name }}">{{ f_name[:25] }}{% if f_name|length > 25 %}...{% endif %}</span>
+                                    <span class="entity-type text-muted fs-xs" title="{{ f_path }}">{{ f_path[:35] }}{% if f_path|length > 35 %}...{% endif %}</span>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set action_val = log.action %}
+                                {% if action_val in ['Alta', 'Aprobado', 'Activación', 'Aprobación', 'Creación', 'Registro', 'Carpeta', 'Carga'] %}
+                                    <span class="audit-badge badge-success-premium">
+                                        <i class="fas fa-check-circle"></i> {{ action_val }}
+                                    </span>
+                                {% elif action_val in ['Baja', 'Rechazado', 'Revocado', 'Eliminación', 'Borrado', 'Fallo', 'Error'] %}
+                                    <span class="audit-badge badge-danger-premium">
+                                        <i class="fas fa-times-circle"></i> {{ action_val }}
+                                    </span>
+                                {% elif action_val in ['Descarga', 'Copia'] %}
+                                    <span class="audit-badge badge-warning-premium">
+                                        <i class="fas fa-download"></i> {{ action_val }}
+                                    </span>
+                                {% else %}
+                                    <span class="audit-badge badge-info-premium">
+                                        <i class="fas fa-info-circle"></i> {{ action_val }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            {% if log_type == 'admin' %}
+                            <td>
+                                <div class="audit-description-box" style="max-width: 500px;">
+                                    <p class="m-0 fs-xs fw-500 text-muted" style="line-height: 1.5;">{{ log.description or 'Sin detalles adicionales' }}</p>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="{{ 5 if log_type == 'admin' else 4 }}">
+                                <div class="nexus-empty-state" style="padding: 64px 0;">
+                                    <div class="nexus-empty-icon">
+                                        <i class="fas fa-history"></i>
+                                    </div>
+                                    <h3 class="nexus-empty-title">Historial Vacío</h3>
+                                    <p class="nexus-empty-text">No hay registros de auditoría en este momento.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if total_pages > 1 %}
+            <div class="pagination-footer mt-15 d-flex justify-between items-center">
+                <div class="pagination-info fs-xs text-muted">
+                    Mostrando <strong>{{ logs|length }}</strong> de <strong>{{ total_logs }}</strong> registros
+                </div>
+                <div class="pagination-controls d-flex gap-05">
+                    <a href="{{ url_for('admin.audit_view', page=current_page-1, type=log_type) }}" 
+                       class="pagination-btn {% if current_page == 1 %}disabled{% endif %}">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </a>
+                    <span class="fs-xs fw-700">Página {{ current_page }} de {{ total_pages }}</span>
+                    <a href="{{ url_for('admin.audit_view', page=current_page+1, type=log_type) }}" 
+                       class="pagination-btn {% if current_page == total_pages %}disabled{% endif %}">
+                        Siguiente <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce() }}">
+    window.__datos = {
+        urls: {
+            home: "{{ url_for('main.index') }}"
+        }
+    };
+</script>
+<script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='js/audit-page.js') }}?v=11"></script>
+{% endblock %}

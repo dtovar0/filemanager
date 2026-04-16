@@ -1,0 +1,12 @@
+# === INICIO GITIGNORE ===
+
+venv/
+.env
+*.log
+.DS_Store
+__pycache__/
+*.pyc
+instance/
+.pytest_cache/
+
+# === FIN GITIGNORE ===

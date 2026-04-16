@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | {{ portal_settings.portal_name or 'Portal TI' }}{% endblock %}
+
+{% block breadcrumbs %}
+<span class="breadcrumb-item" data-action="go-home">Inicio</span>
+<span>/</span>
+<span class="breadcrumb-item active">Dashboard</span>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+    :root {
+        --dash-accent: {{ portal_settings.portal_logo_bg or '#6366f1' }};
+    }
+
+/* NEXUS DASHBOARD ARCHITECTURE */
+    .dashboard-layout-master {
+        display: flex;
+        gap: 24px;
+        margin-top: 24px;
+        align-items: flex-start;
+    }
+
+    .dashboard-left-charts {
+        flex: 0 0 72%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .dashboard-right-activity {
+        flex: 0 0 calc(28% - 24px);
+        min-width: 320px;
+    }
+
+    .stat-card-premium {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        height: 300px; /* Tamaño solicitado para mayor impacto visual */
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .stat-card-premium:hover {
+        transform: translateY(-5px);
+        border-color: var(--dash-accent);
+        box-shadow: 0 12px 30px -10px rgba(0,0,0,0.4);
+    }
+
+    .stat-card-title-nexus {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        font-size: 0.8rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+    }
+
+    .chart-stage-container {
+        position: relative;
+        height: 220px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 12px;
+    }
+
+    .activity-monitor-panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .monitor-header-status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 20px;
+    }
+
+    /* NEXUS LOG SYSTEM */
+    .log-list-dynamic {
+        max-height: 540px;
+        overflow-y: auto;
+        padding-right: 8px;
+    }
+
+    .log-list-dynamic::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .log-list-dynamic::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 10px;
+    }
+
+    .log-item-nexus {
+        display: flex;
+        align-items: flex-start;
+        padding: 12px 0;
+        gap: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        transition: background 0.2s;
+    }
+
+    .log-item-nexus:last-child {
+        border-bottom: none;
+    }
+
+    .log-indicator-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+        box-shadow: 0 0 10px var(--dot-color);
+        background-color: var(--dot-color);
+    }
+
+    /* KPI MODIFIERS */
+    .icon-bg-emerald { background: rgba(16, 185, 129, 0.1) !important; color: var(--status-approved) !important; }
+    .icon-bg-indigo { background: var(--accent-indigo-bg) !important; color: var(--primary-color) !important; }
+    .icon-bg-purple { background: var(--accent-indigo-bg) !important; color: #8b5cf6 !important; }
+    .icon-bg-amber { background: rgba(217, 119, 6, 0.1) !important; color: var(--status-pending) !important; }
+    .icon-bg-blue { background: rgba(59, 130, 246, 0.1) !important; color: var(--status-info) !important; }
+
+    .nexus-empty-state-dash {
+        padding-top: 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .nexus-empty-icon-dash {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+        background: rgba(255,255,255,0.03);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+    }
+    .log-item-body {
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .log-entity-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 2px;
+    }
+
+    .log-action-text {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .log-time-nexus {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        opacity: 0.7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="kpi-row-4 mb-15">
+    <!-- Areas -->
+    <div class="status-card-dash">
+        <div class="card-icon-dash icon-bg-emerald">
+            <i class="fas fa-network-wired"></i>
+        </div>
+        <div class="kpi-text-col">
+            <div class="kpi-value-new">Áreas</div>
+            <div class="kpi-label-new">{{ areas_count_num or 0 }}</div>
+        </div>
+    </div>
+
+    <!-- Plataformas -->
+    <div class="status-card-dash">
+        <div class="card-icon-dash icon-bg-indigo">
+            <i class="fas fa-layer-group"></i>
+        </div>
+        <div class="kpi-text-col">
+            <div class="kpi-value-new">Plataformas</div>
+            <div class="kpi-label-new">{{ total or 0 }}</div>
+        </div>
+    </div>
+
+    <!-- Eventos recientes -->
+    <div class="status-card-dash">
+        <div class="card-icon-dash icon-bg-amber">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div class="kpi-text-col">
+            <div class="kpi-value-new">Eventos</div>
+            <div class="kpi-label-new">{{ recent_events or 0 }}</div>
+        </div>
+    </div>
+
+    <!-- Visitas -->
+    <div class="status-card-dash">
+        <div class="card-icon-dash icon-bg-blue">
+            <i class="fas fa-eye"></i>
+        </div>
+        <div class="kpi-text-col">
+            <div class="kpi-value-new">Descargas</div>
+            <div class="kpi-label-new">{{ visits_total or 0 }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-layout-master">
+    <!-- LEFT: 2x2 GRID -->
+    <div class="dashboard-left-charts">
+        <div class="stat-card-premium">
+            <div class="d-flex justify-between items-center mb-075">
+                <h2 class="stat-card-title-nexus">Usuarios por Plataforma</h2>
+                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="chart-stage-container">
+                <canvas id="usersPlatformChart"></canvas>
+            </div>
+        </div>
+
+        <div class="stat-card-premium">
+            <div class="d-flex justify-between items-center mb-075">
+                <h2 class="stat-card-title-nexus">Usuarios por Área</h2>
+                <a href="{{ url_for('admin.areas_list') }}" class="btn-view-more">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="chart-stage-container">
+                <canvas id="usersAreaBarChart"></canvas>
+            </div>
+        </div>
+
+        <div class="stat-card-premium">
+            <div class="d-flex justify-between items-center mb-075">
+                <h2 class="stat-card-title-nexus">Ocupación por Plataforma (GB)</h2>
+                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more">
+                    <i class="fas fa-database"></i>
+                </a>
+            </div>
+            <div class="chart-stage-container">
+                <canvas id="storageUsageChart"></canvas>
+            </div>
+        </div>
+
+        <div class="stat-card-premium">
+            <div class="d-flex justify-between items-center mb-075">
+                <h2 class="stat-card-title-nexus">Plataformas Más Descargadas</h2>
+                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+            </div>
+            <div class="chart-stage-container">
+                <canvas id="mostVisitedChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: ACTIVITY PANEL -->
+    <div class="dashboard-right-activity h-full">
+        <div class="activity-monitor-panel h-full">
+            <div class="monitor-header-status">
+                <div class="d-flex items-center gap-075">
+                    <i class="fas fa-satellite-dish" style="color: var(--dash-accent);"></i>
+                    <h2 class="stat-card-title-nexus">Monitoreo de Actividad</h2>
+                </div>
+                <a href="{{ url_for('admin.audit_view') }}" class="btn-view-more">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="log-list-dynamic" id="dashboard-activity-log">
+                {% for r in log_list %}
+                <div class="log-item-nexus">
+                    {% set dot_color = '#10b981' if r.action in ['Alta', 'Aprobado', 'Activación'] else '#f59e0b' if r.action in ['Modificación'] else '#ef4444' %}
+                    <div class="log-indicator-dot" style="--dot-color: {{ dot_color }};"></div>
+                    <div class="log-item-body">
+                        <div class="log-entity-name">{{ r.user_name or 'Sistema' }}</div>
+                        <div class="log-action-text">
+                            {% set verb = 'Creó' if r.action == 'Alta' else 'Eliminó' if r.action == 'Baja' else 'Modificó' if r.action == 'Modificación' else 'Activó' if r.action == 'Activación' else 'Deshabilitó' if r.action == 'Deshabilitación' else 'Acceso aprobado' if r.action == 'Aprobado' else 'Acceso denegado' if r.action == 'Rechazado' else r.action %}
+                            {{ verb }} <span class="text-white fw-700">{{ r.target_name }}</span>
+                        </div>
+                    </div>
+                    <div class="log-time-nexus">{{ r.created_at.strftime('%H:%M') }}</div>
+                </div>
+                {% else %}
+                <div class="nexus-empty-state-dash">
+                    <div class="nexus-empty-icon-dash">
+                        <i class="fas fa-satellite-dish"></i>
+                    </div>
+                    <h3 class="stat-card-title-nexus text-center">Sin Actividad</h3>
+                    <p class="fs-xs text-muted text-center">Motor de escucha activo.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce() }}" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script nonce="{{ csp_nonce() }}">
+    window.__chartData = {
+        usersPlatformLabels: {{ users_platform_labels|tojson }},
+        usersPlatformValues: {{ users_platform_values|tojson }},
+        accentColor: '{{ portal_settings.portal_logo_bg or "#6366f1" }}',
+        usersAreaLabels: {{ users_area_labels|tojson }},
+        usersAreaValues: {{ users_area_values|tojson }},
+        usersAreaColors: {{ users_area_colors|tojson }},
+        mostVisitedLabels: {{ most_visited|map(attribute='name')|list|tojson }},
+        mostVisitedValues: {{ most_visited|map(attribute='can_download')|list|tojson }}
+    };
+</script>
+<script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
