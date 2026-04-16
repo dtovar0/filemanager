@@ -243,3 +243,12 @@ Estado vacío del panel lateral de ficha técnica.
 
 ---
 *Last Updated: 2026-04-16*
+
+## 🔔 Sistema de Notificaciones
+- **Componente:** SweetAlert2 Toasts.
+- **Ubicación:** `bottom-end` (Inferior Derecha).
+- **Regla Anti-Encimamiento:** Las notificaciones disparadas desde un modal activo DEBEN ser Toasts para evitar la sobrecarga visual de múltiples capas modales.
+- **Estilo Sincronizado:** 
+  - Dark Mode: Background `#1e293b`, Color `#f8fafc`.
+  - Light Mode: Background `#ffffff`, Color `#1e293b`.
+- **Transiciones:** Fade-in desde la derecha con barra de progreso esmeralda.

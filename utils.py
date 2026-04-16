@@ -118,6 +118,10 @@ def log_event(target_type, target_name, action, description, user_id=None, paylo
             u_name = user_obj.name
             u_email = user_obj.email
 
+    from flask import request
+    ip = request.remote_addr if request else None
+    ua = request.user_agent.string if request and request.user_agent else None
+
     new_log = AuditLog(
         target_type=target_type,
         target_name=target_name,
@@ -126,12 +130,18 @@ def log_event(target_type, target_name, action, description, user_id=None, paylo
         user_id=user_id,
         user_name=u_name,
         user_email=u_email,
-        payload=payload
+        payload=payload,
+        ip_address=ip,
+        user_agent=ua
     )
     db.session.add(new_log)
     db.session.commit()
 
 def log_drive_activity(file_name, file_path, action, user_id=None, file_size=0, area_id=None, platform_id=None):
+    from flask import request
+    ip = request.remote_addr if request else None
+    ua = request.user_agent.string if request and request.user_agent else None
+
     new_log = DriveActivity(
         file_name=file_name,
         file_path=file_path,
@@ -139,7 +149,9 @@ def log_drive_activity(file_name, file_path, action, user_id=None, file_size=0, 
         user_id=user_id,
         file_size=file_size,
         area_id=area_id,
-        platform_id=platform_id
+        platform_id=platform_id,
+        ip_address=ip,
+        user_agent=ua
     )
     db.session.add(new_log)
     db.session.commit()

@@ -534,9 +534,29 @@ tbody tr { height: 64px; border-bottom: 1px solid var(--border-color); }
 }
 .top-bar {
     height: var(--topbar-height);
-    background: var(--bg-topbar); border-bottom: 1px solid var(--border-color);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 1.5rem 0 1rem; position: sticky; top: 0; z-index: 900;
+    background: var(--bg-topbar); 
+    border-bottom: 1px solid var(--border-color);
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 0 1.5rem 0 1rem; 
+    position: sticky; 
+    top: 0; 
+    z-index: 900;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-bar.is-scrolled {
+    height: 56px;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(12px);
+    border-bottom-color: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .top-bar.is-scrolled {
+    background: rgba(30, 41, 59, 0.85);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .top-left { display: flex; align-items: center; gap: 1rem; }

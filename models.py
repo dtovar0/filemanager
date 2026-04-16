@@ -109,6 +109,8 @@ class AuditLog(db.Model):
     user_email = db.Column(db.String(100))
     description = db.Column(db.Text)
     payload = db.Column(db.JSON, nullable=True)
+    ip_address = db.Column(db.String(45))
+    user_agent = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.now)
     user = db.relationship('User', backref=db.backref('audit_logs', lazy=True))
 
@@ -122,6 +124,8 @@ class DriveActivity(db.Model):
     area_id = db.Column(db.Integer, db.ForeignKey('area.id'), nullable=True)
     platform_id = db.Column(db.Integer, db.ForeignKey('platform.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    ip_address = db.Column(db.String(45))
+    user_agent = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.now)
     user = db.relationship('User', backref=db.backref('drive_activities', lazy=True))
 

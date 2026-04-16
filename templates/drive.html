@@ -249,6 +249,9 @@
                         <h3 class="empty-state-luxury__title">Nexus Intelligence</h3>
                         <p class="empty-state-luxury__text">Selecciona un activo para desplegar el análisis de metadatos.</p>
                         <div class="empty-state-luxury__badge">Esperando Selección...</div>
+                        <p id="sidebar-upload-tip" class="empty-state-luxury__tip d-none">
+                            <i class="fas fa-magic"></i> Arrastra archivos aquí para subirlos al instante.
+                        </p>
                     </div>
 
                     <!-- Contenedor de Ficha Técnica Dinámica (Vaciado para inyección segura) -->
@@ -269,7 +272,7 @@
             <input type="text" id="newFolderName" class="nexus-search-input--premium" placeholder="Nombre de carpeta...">
         </div>
         <div class="modal-buttons-row">
-            <button class="btn btn-ghost--brand" onclick="document.getElementById('newFolderModal').classList.add('d-none')">Cancelar</button>
+            <button class="btn btn-ghost--brand" onclick="const m=document.getElementById('newFolderModal'); m.classList.remove('show'); setTimeout(()=>m.classList.add('d-none'), 300)">Cancelar</button>
             <button id="confirm-new-folder" class="btn btn-primary--brand">Crear Carpeta</button>
         </div>
     </div>
@@ -284,6 +287,17 @@
         <i class="fas fa-trash-alt"></i> <span>Eliminar</span>
     </div>
 </div>
+
+    <!-- Nexus Upload Manager (Floating) -->
+    <div class="upload-status-nanny" id="nexusUploadManager" style="display:none;">
+        <div class="upload-nanny-header">
+            <span>Gestor de Subidas</span>
+            <button class="btn-close-nanny" style="background:none; border:none; color:white; cursor:pointer;" onclick="this.closest('.upload-status-nanny').style.display='none'"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="upload-items-container" id="uploadItemsContainer">
+            <!-- Items de progreso dinámicos -->
+        </div>
+    </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js" nonce="{{ csp_nonce() }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" nonce="{{ csp_nonce() }}"></script>

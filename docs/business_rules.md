@@ -61,3 +61,9 @@ Todo valor de tamaño de archivo (bytes) debe ser formateado mediante una funci�
 
 ### Impacto:
 Mejora la experiencia de usuario (UX) al proporcionar contexto visual inmediato sobre el archivo seleccionado.
+
+## ⚡ Reglas de Notificación (UX)
+1. **Posicionamiento:** Todas las notificaciones de tipo Toast (confirmaciones de éxito, advertencias rápidas) deben aparecer estrictamente en la **parte inferior derecha** (`bottom-end`).
+2. **Contexto:** Los mensajes deben ser personalizados incluyendo el nombre del activo afectado para evitar ambigüedad.
+3. **Persistencia:** Duración estándar de 3000ms con barra de progreso visual.
+4. **Contexto de Modal:** Toda notificación originada desde un modal activo (ej: errores de validación, colisiones de nombre) DEBE ser un **Toast**. Nunca se debe encimar un modal sobre otro.

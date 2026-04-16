@@ -44,6 +44,22 @@ const FileIcons = {
     }
 };
 
+// --- Sistema de Notificaciones Premium (Toast) ---
+const showToast = (title, icon = 'success') => {
+    const isDark = document.body.dataset.theme === 'dark';
+    Swal.fire({
+        title: title,
+        icon: icon,
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: isDark ? '#1e293b' : '#ffffff',
+        color: isDark ? '#f8fafc' : '#1e293b'
+    });
+};
+
 class FileExplorer {
     constructor(containerId, options = {}) {
         this.container = document.getElementById(containerId);
@@ -56,6 +72,20 @@ class FileExplorer {
     }
 
     async loadFiles(path = '', password = null) {
+        const pathParts = path.split('/').filter(p => p !== '');
+        this.isAreaRoot = path === '' || pathParts.length < 2; 
+        
+        const sidebarRight = document.getElementById('sidebar-right');
+        const uploadTip = document.getElementById('sidebar-upload-tip');
+        
+        if (sidebarRight) {
+            sidebarRight.classList.toggle('d-none', this.isAreaRoot);
+        }
+
+        if (uploadTip) {
+            uploadTip.classList.toggle('d-none', this.isAreaRoot);
+        }
+
         try {
             const data = await NexusAPI.post('/api/drive/list', { path, password });
             if (data.success) {
@@ -93,8 +123,12 @@ class FileExplorer {
                             <i class="fas fa-folder-open"></i>
                         </div>
                     </div>
-                    <h2 class="empty-state-title-nexus">Ubicación Vacía</h2>
-                    <p class="empty-state-text-nexus">Esta carpeta aún no contiene archivos. Comienza a subir contenido para gestionar tus activos digitales.</p>
+                    <p class="empty-state-text-nexus">
+                        ${this.isAreaRoot ? 
+                            'Por favor, <strong>selecciona un área o plataforma</strong> de la izquierda para comenzar a gestionar tus activos digitales.' : 
+                            'Esta ubicación no contiene archivos aún. <strong>Arrastra tus archivos aquí</strong> o utiliza el botón de "Nuevo Archivo" para comenzar.'
+                        }
+                    </p>
                 </div>`;
             return;
         }
@@ -126,7 +160,6 @@ class FileExplorer {
             </div>
             <div class="explorer-item-info">
                 <div class="explorer-item-name" title="${item.name}">${item.name}</div>
-                ${extraClass ? '<span class="platform-badge-mini">Plataforma</span>' : ''}
             </div>
         `;
         card.onclick = (e) => {
@@ -394,6 +427,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ACCIÓN DE ELIMINAR
     async function deleteSelected() {
+        if (explorer.isAreaRoot) {
+            Swal.fire({
+                title: 'Acción No Permitida',
+                text: 'No se pueden eliminar elementos del directorio raíz.',
+                icon: 'error',
+                confirmButtonColor: '#ef4444'
+            });
+            return;
+        }
+
+        if (!currentPerms.can_download && !currentPerms.can_upload) {
+            Swal.fire({
+                title: 'Acceso Restringido',
+                text: 'Esta ubicación está en modo lectura estricta. La eliminación de activos está deshabilitada.',
+                icon: 'warning',
+                confirmButtonColor: '#6366f1'
+            });
+            return;
+        }
+
         const selected = explorer.container.querySelector('.explorer-item.selected');
         if (!selected) return;
         const name = selected.querySelector('.explorer-item-name').innerText;
@@ -410,38 +463,125 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isConfirmed) {
             const password = await getPassIfProtected();
             try {
-                const data = await NexusAPI.post('/api/delete', { path: `${explorer.currentPath}/${name}`, password: password || '' });
+                const data = await NexusAPI.post('/api/delete-item', { path: `${explorer.currentPath}/${name}`, password: password || '' });
                 if (data.success) {
-                    Swal.fire('Eliminado', 'El archivo ha sido borrado.', 'success');
+                    showToast(`Eliminado: ${name}`);
                     explorer.loadFiles(explorer.currentPath);
+                    loadStats();
                 }
             } catch (e) { Swal.fire('Error', e.message, 'error'); }
         }
     }
 
+    const processUpload = async (files) => {
+        if (files.length === 0) return;
+        
+        const password = await getPassIfProtected();
+        if (currentPerms.protected && !password) return;
+
+        const manager = document.getElementById('nexusUploadManager');
+        const container = document.getElementById('uploadItemsContainer');
+        if (manager) manager.style.display = 'flex';
+
+        for (const file of files) {
+            const fileId = 'up-' + Math.random().toString(36).substr(2, 9);
+            const itemHtml = `
+                <div class="upload-progress-item" id="${fileId}">
+                    <div class="upload-item-meta">
+                        <span class="upload-item-name">${file.name}</span>
+                        <div class="d-flex items-center gap-05">
+                            <span class="upload-perc">0%</span>
+                            <button class="btn-cancel-upload" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.75rem;"><i class="fas fa-times-circle"></i></button>
+                        </div>
+                    </div>
+                    <div class="nexus-progress-track">
+                        <div class="nexus-progress-bar"></div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('afterbegin', itemHtml);
+            const itemRow = document.getElementById(fileId);
+            const progressBar = itemRow.querySelector('.nexus-progress-bar');
+            const percText = itemRow.querySelector('.upload-perc');
+            const btnCancel = itemRow.querySelector('.btn-cancel-upload');
+
+            const xhr = new XMLHttpRequest();
+            if (btnCancel) {
+                btnCancel.onclick = () => {
+                    xhr.abort();
+                    percText.innerHTML = '<i class="fas fa-hand-paper" style="color:#f59e0b"></i>';
+                    itemRow.style.opacity = '0.5';
+                    btnCancel.remove();
+                };
+            }
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('path', explorer.currentPath);
+            if (password) fd.append('password', password);
+
+            xhr.upload.addEventListener('progress', (ev) => {
+                if (ev.lengthComputable) {
+                    const percent = Math.round((ev.loaded / ev.total) * 100);
+                    progressBar.style.width = percent + '%';
+                    percText.innerText = percent + '%';
+                }
+            });
+
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            percText.innerHTML = '<i class="fas fa-check-circle status-done"></i>';
+                            progressBar.style.background = '#10b981';
+                            explorer.loadFiles(explorer.currentPath);
+                            loadStats();
+                        } else {
+                            percText.innerHTML = '<i class="fas fa-exclamation-circle status-error"></i>';
+                            progressBar.style.background = '#ef4444';
+                            showToast(response.error || 'Error de subida', 'error');
+                        }
+                    } else if (xhr.status !== 0) {
+                        percText.innerHTML = '<i class="fas fa-times-circle status-error"></i>';
+                        showToast(`Fallo en ${file.name}`, 'error');
+                    }
+                    
+                    setTimeout(() => {
+                        itemRow.style.opacity = '0';
+                        setTimeout(() => {
+                            itemRow.remove();
+                            if (container.children.length === 0) manager.style.display = 'none';
+                        }, 500);
+                    }, 5000);
+                }
+            };
+
+            xhr.open('POST', '/api/upload', true);
+            xhr.setRequestHeader('X-CSRFToken', document.querySelector('meta[name="csrf-token"]')?.content);
+            xhr.send(fd);
+        }
+    };
+
     document.getElementById('ctx-delete')?.addEventListener('click', deleteSelected);
     document.getElementById('btn-delete-main')?.addEventListener('click', deleteSelected);
 
     document.getElementById('trigger-upload')?.addEventListener('click', () => {
+        if (explorer.isAreaRoot) {
+            Swal.fire({
+                title: 'Acción No Permitida',
+                text: 'No se pueden subir archivos en el directorio raíz. Selecciona un área primero.',
+                icon: 'warning',
+                confirmButtonColor: '#6366f1'
+            });
+            return;
+        }
         if (!currentPerms.can_upload) { Swal.fire('Acceso Restringido', 'Subidas deshabilitadas.', 'info'); return; }
-        const input = document.createElement('input'); input.type = 'file'; input.multiple = true;
-        input.onchange = async () => {
-            const password = await getPassIfProtected();
-            if (currentPerms.protected && !password) return;
-            for (const file of input.files) {
-                const fd = new FormData(); fd.append('file', file); fd.append('path', explorer.currentPath);
-                if (password) fd.append('password', password);
-                try {
-                    const res = await fetch('/api/upload', {
-                        method: 'POST',
-                        headers: { 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content },
-                        body: fd
-                    });
-                    const d = await res.json();
-                    if (d.success) explorer.loadFiles(explorer.currentPath);
-                } catch (e) { Swal.fire('Error', e.message, 'error'); }
-            }
-        };
+        
+        const input = document.createElement('input'); 
+        input.type = 'file'; 
+        input.multiple = true;
+        input.onchange = () => processUpload(Array.from(input.files));
         input.click();
     });
 
@@ -465,8 +605,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', () => ctxMenu.classList.add('d-none'));
 
     document.getElementById('open-folder-modal')?.addEventListener('click', () => {
+        if (explorer.isAreaRoot) {
+            Swal.fire({
+                title: 'Acción No Permitida',
+                text: 'No se pueden crear carpetas en el nivel raíz.',
+                icon: 'warning',
+                confirmButtonColor: '#6366f1'
+            });
+            return;
+        }
         if (!currentPerms.can_upload) { Swal.fire('Acceso Restringido', 'Creación de carpetas deshabilitada.', 'info'); return; }
-        document.getElementById('newFolderModal').classList.remove('d-none');
+        const modal = document.getElementById('newFolderModal');
+        if (modal) {
+            modal.classList.remove('d-none');
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
     });
 
     document.getElementById('confirm-new-folder')?.addEventListener('click', async () => {
@@ -476,7 +629,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentPerms.protected && !password) return;
         try {
             const data = await NexusAPI.post('/api/create-folder', { path: explorer.currentPath, folder_name: name, password: password || '' });
-            if (data.success) { document.getElementById('newFolderModal').classList.add('d-none'); explorer.loadFiles(explorer.currentPath); }
+            if (data.success) { 
+                const modal = document.getElementById('newFolderModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => modal.classList.add('d-none'), 300);
+                }
+                if (data.was_sanitized) {
+                    showToast(`Nombre saneado: ${data.sanitized_name}`, 'warning');
+                } else {
+                    showToast(`Carpeta creada: ${name}`);
+                }
+                explorer.loadFiles(explorer.currentPath); 
+                loadStats();
+            } else {
+                showToast(data.error || 'Conflicto de nombre', 'error');
+            }
         } catch (e) { Swal.fire('Error', e.message, 'error'); }
     });
 
@@ -715,6 +883,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     switchTab('inicio', document.querySelector('[data-tab="inicio"]'));
 
+    // --- Drag and Drop System ---
+    const initDragAndDrop = () => {
+        const dropZone = archivosGrid; // El contenedor principal
+        if (!dropZone) return;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+        });
+
+        dropZone.addEventListener('drop', async (e) => {
+            if (explorer.isAreaRoot) {
+                Swal.fire({
+                    title: 'Acción No Permitida',
+                    text: 'No se pueden subir archivos directamente en el directorio raíz. Por favor, selecciona un área o plataforma primero.',
+                    icon: 'warning',
+                    confirmButtonColor: '#6366f1'
+                });
+                return;
+            }
+
+            if (!currentPerms.can_upload) { 
+                Swal.fire('Acceso Restringido', 'No tienes permisos de subida.', 'info');
+                return; 
+            }
+            
+            processUpload(Array.from(e.dataTransfer.files));
+        });
+    };
+
+    initDragAndDrop();
+
     // Tecla ESC para limpiar buscador (Atajo Maestro)
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -725,5 +935,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    function initScrollIntelligence() {
+        const topBar = document.querySelector('.top-bar');
+        const containers = ['.main-layout', '.explorer-col-primary'];
+        containers.forEach(selector => {
+            const el = document.querySelector(selector);
+            if (el) {
+                el.addEventListener('scroll', () => {
+                    if (topBar) {
+                        if (el.scrollTop > 20) topBar.classList.add('is-scrolled');
+                        else topBar.classList.remove('is-scrolled');
+                    }
+                });
+            }
+        });
+    }
+
+    initScrollIntelligence();
 
 });

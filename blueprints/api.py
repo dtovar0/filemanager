@@ -77,6 +77,10 @@ def upload_file():
 
         full_path = os.path.join(dest_dir, safe_filename)
         
+        # Validación de colisión: No permitir sobrescribir sin aviso
+        if os.path.exists(full_path):
+            return jsonify({'success': False, 'error': f'El archivo "{safe_filename}" ya existe en esta ubicación.'}), 409
+
         # Guardado final
         file.save(full_path)
         
@@ -172,11 +176,13 @@ def create_folder_api():
         data = request.get_json() or {}
         base_path = StorageManager.get_safe_path(data.get('path'))
         folder_name = data.get('folder_name')
-        
         if not folder_name:
             return jsonify({'success': False, 'error': 'Nombre de carpeta requerido'})
             
-        new_folder_path = os.path.join(base_path, secure_filename(folder_name))
+        original_name = folder_name
+        sanitized_name = secure_filename(original_name)
+        new_folder_path = os.path.join(base_path, sanitized_name)
+        was_sanitized = original_name != sanitized_name
         
         if os.path.exists(new_folder_path):
             return jsonify({'success': False, 'error': 'La carpeta ya existe'})
@@ -187,8 +193,13 @@ def create_folder_api():
         area_id = target_platform.area_id if target_platform else None
         platform_id = target_platform.id if target_platform else None
         
-        log_drive_activity(folder_name, data.get('path'), 'Carpeta', g.user_id, 0, area_id, platform_id)
-        return jsonify({'success': True, 'message': 'Carpeta creada'})
+        log_drive_activity(sanitized_name, data.get('path'), 'Carpeta', g.user_id, 0, area_id, platform_id)
+        return jsonify({
+            'success': True, 
+            'message': 'Carpeta creada', 
+            'was_sanitized': was_sanitized,
+            'sanitized_name': sanitized_name
+        })
 
     except PermissionError as pe:
         return jsonify({'success': False, 'error': str(pe)}), 403
