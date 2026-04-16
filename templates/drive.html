@@ -209,7 +209,6 @@
                 <div class="sidebar-panel sidebar-panel--detail">
                     <div class="preview-header">
                         <h5 class="management-label--mini">Vista Previa</h5>
-                        <div id="detail-type-badge" class="type-badge">TIPO</div>
                     </div>
                     
                     <!-- Estado Vacío -->
@@ -222,22 +221,32 @@
 
                     <!-- Contenido de Detalle -->
                     <div id="details-content" class="preview-active-content d-none">
-                        <div id="detail-preview-container" class="preview-nexus-box preview-nexus-box--luxury">
+                        <!-- 1. Vista Previa (Icono) -->
+                        <div id="detail-preview-container" class="preview-nexus-box--luxury">
                             <i class="fas fa-file-alt" id="detail-icon-large"></i>
                         </div>
-                        <h3 id="detail-name" class="preview-item-name">Nombre del Archivo</h3>
+
+                        <!-- 2. Nombre -->
+                        <h3 id="detail-name" class="preview-item-name text-center">Nombre del Archivo</h3>
                         
+                        <!-- 3. Etiqueta -->
+                        <div class="d-flex justify-center mb-1">
+                            <div id="detail-type-badge" class="type-badge">TIPO ARCHIVO</div>
+                        </div>
+
+                        <!-- 4. Detalle (Metadatos) -->
                         <div class="preview-meta-grid">
                             <div class="meta-row">
                                 <span class="meta-label">Tamaño</span>
                                 <span id="detail-size" class="meta-value">--</span>
                             </div>
                             <div class="meta-row">
-                                <span class="meta-label">Última Modificación</span>
+                                <span class="meta-label">Modificación</span>
                                 <span id="detail-date" class="meta-value">--</span>
                             </div>
                         </div>
 
+                        <!-- 5. Botones -->
                         <div class="preview-actions-footer">
                             <button class="btn btn-success--premium" id="btn-download-main">
                                 <i class="fas fa-download"></i> Descargar

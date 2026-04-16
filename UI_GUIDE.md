@@ -21,6 +21,7 @@
 - **Sidebar Internal Layout (Vertical 20/80):**
   - **Top Panel (20%):** Search bar y botones de acción (Subir/Nueva).
   - **Bottom Panel (80%):** Vista previa detallada y metadatos del archivo.
+- **Jerarquía Semántica Obligatoria:** Todas las vistas operativas (`#view-inicio`, `#view-archivos`, etc.) DEBEN estar anidadas dentro del contenedor maestro `#catalog-root`. NUNCA cerrar el root antes de declarar todas las vistas.
 - **Contenedores:** Siempre `h-full` o `min-h-screen` para asegurar simetría.
 
 ## 🧱 Component Library

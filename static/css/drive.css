@@ -2076,3 +2076,307 @@
     padding: 2rem !important;
     align-content: start;
 }
+
+/* ==========================================================
+   SIDEBAR PREMIUM REFINEMENT (ELITE UI)
+   ========================================================== */
+
+.explorer-col-sidebar {
+    background: var(--bg-card) !important;
+    border-left: 1px solid var(--border-color) !important;
+}
+
+.sidebar-panel {
+    padding: 1.75rem 1.5rem !important;
+}
+
+/* Acciones Premium */
+.management-label--mini {
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-size: 0.7rem !important;
+    margin-bottom: 1rem !important;
+    display: block;
+}
+
+.sidebar-actions-row {
+    margin-top: 1.25rem !important;
+}
+
+.sidebar-actions-row .btn {
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    height: 42px;
+}
+
+/* Preview Luxury Section */
+.sidebar-panel--detail {
+    border-top: 1px solid var(--border-color);
+}
+
+.preview-nexus-box--luxury {
+    height: 160px !important;
+    background: var(--bg-main) !important;
+    border: 1px dashed var(--border-color);
+    border-radius: 20px !important;
+    margin-bottom: 1.5rem;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+}
+
+#detail-icon-large {
+    font-size: 4rem !important;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+.preview-item-name {
+    font-size: 1.1rem !important;
+    margin-bottom: 1.5rem !important;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+/* Metadata Styling */
+.preview-meta-grid {
+    gap: 1rem !important;
+    background: var(--bg-hover);
+    padding: 1.25rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+}
+
+.meta-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    border-bottom: none !important;
+    padding: 0 !important;
+    gap: 4px;
+}
+
+.meta-label {
+    font-size: 0.65rem !important;
+    opacity: 0.6;
+}
+
+.meta-value {
+    font-size: 0.85rem !important;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+}
+
+/* Footer Actions */
+.preview-actions-footer {
+    padding-top: 0 !important;
+    gap: 0.75rem !important;
+}
+
+.preview-actions-footer .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    height: 46px;
+    border-radius: 14px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 700 !important;
+}
+
+.btn-success--premium {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+.btn-danger--premium {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+#detail-type-badge {
+    padding: 4px 10px !important;
+    font-size: 0.65rem !important;
+}
+
+/* ==========================================================
+   FLOATING CARDS LAYOUT (SIDEBAR RECONSTRUCTION)
+   ========================================================== */
+
+.explorer-layout-master {
+    gap: 1.5rem !important; /* Espacio entre el explorador y el sidebar */
+    padding: 1.5rem !important;
+    background: var(--bg-main) !important;
+}
+
+.explorer-col-primary {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 24px !important;
+    background: var(--bg-card) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+}
+
+.explorer-col-sidebar {
+    background: transparent !important; /* Ver fondo del main */
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important; /* Separación entre paneles */
+}
+
+.sidebar-panel {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+    padding: 1.5rem !important;
+}
+
+.sidebar-panel--actions {
+    border-bottom: 1px solid var(--border-color) !important; /* Mantener estética */
+}
+
+/* Ajuste de padding interno para el grid de explorador */
+.explorer-main-area {
+    padding: 1.5rem !important;
+}
+
+
+/* Vertical Stack Enforcement for Preview Panel */
+.preview-active-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1.25rem !important;
+}
+
+.preview-nexus-box--luxury {
+    width: 100% !important;
+    margin-bottom: 0 !important;
+}
+
+.preview-item-name.text-center {
+    text-align: center !important;
+    width: 100% !important;
+}
+
+.justify-center {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+.preview-meta-grid {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.preview-actions-footer {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+}
+
+.mb-1 { margin-bottom: 1rem !important; }
+
+/* Refinement: Real Card Style for Explorer Items */
+.explorer-item {
+    background: var(--bg-card) !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 20px !important;
+    padding: 1rem !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+}
+
+.explorer-item:hover {
+    border-color: var(--primary-color) !important;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+}
+
+.explorer-item.selected {
+    background: rgba(99, 102, 241, 0.05) !important;
+    border-color: var(--primary-color) !important;
+    border-width: 2px !important;
+}
+
+/* Footer Actions: Side-by-Side Buttons */
+.preview-actions-footer {
+    display: flex !important;
+    flex-direction: row !important; /* Ahora uno al lado del otro */
+    gap: 0.75rem !important;
+    padding-top: 0.5rem !important;
+}
+
+.preview-actions-footer .btn {
+    flex: 1 !important; /* Cada botón ocupa el 50% */
+    padding: 0.6rem 0.5rem !important;
+    font-size: 0.75rem !important;
+}
+
+
+/* Surgical Compaction: Reducing padding and fixing centering */
+
+.explorer-layout-master {
+    gap: 1rem !important;
+    padding: 1rem !important;
+}
+
+.sidebar-panel {
+    padding: 1.25rem !important;
+}
+
+.preview-active-content {
+    gap: 0.75rem !important; /* Gaps más apretados entre elementos verticalmente */
+}
+
+/* Centrado Absoluto del Icono de Vista Previa */
+.preview-nexus-box--luxury {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 0px !important;
+    height: 120px !important; /* Altura compactada */
+}
+
+.preview-nexus-box--luxury i {
+    display: block !important;
+    margin: 0 !important;
+}
+
+.preview-item-name.text-center {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+/* Espacios en Metadata */
+.preview-meta-grid {
+    padding: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+    gap: 0.5rem !important;
+}
+
+.meta-row {
+    padding-bottom: 0.25rem !important;
+}
+
+/* Reducción de márgenes en títulos de widgets */
+.management-label--mini {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Premium Locked/Disabled States */
+.is-locked, .btn:disabled {
+    opacity: 0.45 !important;
+    filter: grayscale(1) !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.is-disabled-ctx {
+    opacity: 0.4 !important;
+    filter: grayscale(1);
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+    background: transparent !important;
+}

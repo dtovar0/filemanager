@@ -171,6 +171,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 can_upload: data.permissions?.can_upload ?? true,
                 protected: data.protected ?? false
             };
+
+            // Aplicar estado deshabilitado según permisos (Mantener visibles)
+            const uploadBtn = document.getElementById('trigger-upload');
+            const downloadBtn = document.getElementById('btn-download-main');
+            const deleteBtn = document.getElementById('btn-delete-main');
+            const ctxDelete = document.getElementById('ctx-delete');
+            const ctxDownload = document.getElementById('ctx-download');
+
+            if (uploadBtn) {
+                uploadBtn.disabled = !currentPerms.can_upload;
+                uploadBtn.classList.toggle('is-locked', !currentPerms.can_upload);
+            }
+            if (downloadBtn) {
+                downloadBtn.disabled = !currentPerms.can_download;
+                downloadBtn.classList.toggle('is-locked', !currentPerms.can_download);
+            }
+            if (deleteBtn) {
+                deleteBtn.disabled = !currentPerms.can_download; // Delete usa can_download como proxy de gestión
+                deleteBtn.classList.toggle('is-locked', !currentPerms.can_download);
+            }
+            
+            // Contextuales (Divs)
+            if (ctxDownload) ctxDownload.classList.toggle('is-disabled-ctx', !currentPerms.can_download);
+            if (ctxDelete) ctxDelete.classList.toggle('is-disabled-ctx', !currentPerms.can_download);
             const gridWrapper = document.getElementById('archivos-grid');
             if (data.context?.kind === 'area_root') {
                 gridWrapper.classList.add('is-area-root-layout');
@@ -220,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }) : '--';
 
                 // 1. Elementos y Color
-                const previewBox = content.querySelector('.preview-nexus-box');
+                const previewBox = document.getElementById('detail-preview-container');
                 const previewIcon = document.getElementById('detail-icon-large');
                 
                 // Color dinámico según tipo
