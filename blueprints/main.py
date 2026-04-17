@@ -1,10 +1,105 @@
-from flask import Blueprint, render_template, request, redirect, url_for, g, make_response
+from flask import Blueprint, render_template, request, redirect, url_for, g, make_response, jsonify, current_app
 import jwt
+import os
+import secrets
+import pymysql
+import configparser
 from datetime import datetime, timedelta
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from models import db, Area, Platform, User, AuditLog, SystemSettings
 
 main_bp = Blueprint('main', __name__)
+
+@main_bp.route('/install', methods=['GET', 'POST'])
+def web_installer():
+    # Solo permitir si no existe config.conf o si se fuerza (seguridad básica)
+    config_path = os.path.join(current_app.root_path, 'config.conf')
+    if os.path.exists(config_path) and request.method == 'GET':
+        return redirect(url_for('main.login'))
+
+    if request.method == 'POST':
+        try:
+            db_host = request.form.get('db_host')
+            db_user = request.form.get('db_user')
+            db_pass = request.form.get('db_pass')
+            db_name = request.form.get('db_name')
+            drop_db = request.form.get('drop_db') == 'on'
+            
+            admin_name = request.form.get('admin_name')
+            admin_email = request.form.get('admin_email')
+            admin_pass = request.form.get('admin_pass')
+
+            # 1. Crear Base de Datos
+            conn = pymysql.connect(host=db_host, user=db_user, password=db_pass)
+            with conn.cursor() as cursor:
+                if drop_db:
+                    cursor.execute(f"DROP DATABASE IF EXISTS {db_name}")
+                cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} CHARACTER SET utf8mb4")
+            conn.close()
+
+            # 2. Importar Schema y Crear Admin
+            # Nota: SQLALchemy necesita que la DB exista primero
+            temp_uri = f"mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}"
+            from sqlalchemy import create_engine
+            engine = create_engine(temp_uri)
+            
+            # Ejecutar Schema
+            schema_path = os.path.join(current_app.root_path, 'schema.sql')
+            with open(schema_path, 'r') as f:
+                schema_sql = f.read()
+                with engine.connect() as con:
+                    for statement in schema_sql.split(';'):
+                        if statement.strip():
+                            con.execute(db.text(statement))
+            
+            # Crear Admin vía Tabla directa (evitando problemas de sesión de Flask-SQLAlchemy antes de config)
+            pass_hash = generate_password_hash(admin_pass)
+            with engine.connect() as con:
+                con.execute(db.text("INSERT INTO user (name, email, role, status, password_hash) VALUES (:name, :email, 'Administrador', 'Activo', :pass)"),
+                            {"name": admin_name, "email": admin_email, "pass": pass_hash})
+                con.commit()
+
+            # 3. Generar Config.conf
+            cp = configparser.ConfigParser()
+            cp.add_section('DATABASE')
+            cp['DATABASE']['DB_USER'] = db_user
+            cp['DATABASE']['DB_PASS'] = db_pass
+            cp['DATABASE']['DB_HOST'] = db_host
+            cp['DATABASE']['DB_NAME'] = db_name
+            
+            cp.add_section('REDIS')
+            cp['REDIS']['REDIS_ENABLED'] = 'False'
+            cp['REDIS']['REDIS_HOST'] = 'localhost'
+            cp['REDIS']['REDIS_PORT'] = '6379'
+            
+            cp.add_section('SYSTEM')
+            cp['SYSTEM']['SECRET_KEY'] = secrets.token_hex(24)
+            cp['SYSTEM']['DEBUG'] = 'False'
+            
+            with open(config_path, 'w') as configfile:
+                cp.write(configfile)
+
+            return render_template('install.html', success=True)
+            
+        except Exception as e:
+            return render_template('install.html', error=str(e))
+
+    return render_template('install.html')
+
+@main_bp.route('/test_db', methods=['POST'])
+def test_db():
+    data = request.json
+    try:
+        conn = pymysql.connect(
+            host=data.get('db_host'),
+            user=data.get('db_user'),
+            password=data.get('db_pass'),
+            connect_timeout=5
+        )
+        conn.close()
+        return jsonify({"success": True, "message": "Conexión exitosa con el servidor MySQL"})
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Fallo de conexión: {str(e)}"})
 
 @main_bp.route('/')
 def index():

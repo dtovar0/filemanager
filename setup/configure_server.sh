@@ -40,42 +40,39 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_ROOT"
 
 # 1. Configurar el servicio Systemd
-echo "[+] Configurando servicio systemd (nexus.service)..."
-if [[ -f "$SCRIPT_DIR/nexus.service" ]]; then
-    cp "$SCRIPT_DIR/nexus.service" /etc/systemd/system/nexus.service
+echo "[+] Configurando servicio systemd (filemanager.service)..."
+if [[ -f "$SCRIPT_DIR/filemanager.service" ]]; then
+    cp "$SCRIPT_DIR/filemanager.service" /etc/systemd/system/filemanager.service
     systemctl daemon-reload
-    systemctl enable nexus
-    systemctl restart nexus
-    echo "    - Servicio nexus iniciado y habilitado."
+    systemctl enable filemanager
+    systemctl restart filemanager
+    echo "    - Servicio filemanager iniciado y habilitado."
 else
-    echo "    [!] Error: No se encontró $SCRIPT_DIR/nexus.service. Ejecute install.py primero."
+    echo "    [!] Error: No se encontró $SCRIPT_DIR/filemanager.service. Ejecute install.py primero."
     exit 1
 fi
 
 # 2. Configurar el Servidor Web
 if [[ "$SERVER_TYPE" == "apache" ]]; then
     echo "[+] Configurando Apache..."
-    if [[ -f "$SCRIPT_DIR/nexus-apache.conf" ]]; then
-        cp "$SCRIPT_DIR/nexus-apache.conf" /etc/apache2/sites-available/nexus.conf
-        a2ensite nexus.conf
-        # Deshabilitar default si es necesario (opcional)
-        # a2dissite 000-default.conf
+    if [[ -f "$SCRIPT_DIR/filemanager-apache.conf" ]]; then
+        cp "$SCRIPT_DIR/filemanager-apache.conf" /etc/apache2/sites-available/filemanager.conf
+        a2ensite filemanager.conf
         systemctl restart apache2
         echo "    - Apache configurado y reiniciado."
     else
-        echo "    [!] Error: No se encontró setup/nexus-apache.conf"
+        echo "    [!] Error: No se encontró setup/filemanager-apache.conf"
     fi
 else
     echo "[+] Configurando Nginx..."
-    if [[ -f "$SCRIPT_DIR/nexus-nginx.conf" ]]; then
-        cp "$SCRIPT_DIR/nexus-nginx.conf" /etc/nginx/sites-available/nexus
-        ln -sf /etc/nginx/sites-available/nexus /etc/nginx/sites-enabled/
-        # Eliminar default si existe
+    if [[ -f "$SCRIPT_DIR/filemanager-nginx.conf" ]]; then
+        cp "$SCRIPT_DIR/filemanager-nginx.conf" /etc/nginx/sites-available/filemanager
+        ln -sf /etc/nginx/sites-available/filemanager /etc/nginx/sites-enabled/
         rm -f /etc/nginx/sites-enabled/default
         nginx -t && systemctl restart nginx
         echo "    - Nginx configurado y reiniciado."
     else
-        echo "    [!] Error: No se encontró setup/nexus-nginx.conf"
+        echo "    [!] Error: No se encontró setup/filemanager-nginx.conf"
     fi
 fi
 

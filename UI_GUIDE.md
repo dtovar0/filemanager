@@ -11,9 +11,10 @@
 
 ## 📐 Layout System (8pt Grid)
 - **Base Grid:** Todos los espaciados, paddings y márgenes son múltiplos de `8px`.
+- **Top Bar Height:** Estándar de `64px` (Variable: `--topbar-height`).
 - **Gaps Estándar:** 
   - Gaps entre bloques mayores: `32px`.
-  - Gaps entre tarjetas (Grid): `20px` o `24px`.
+  - Gaps entre tarjetas (Grid): `1.5rem (24px)` para simetría total.
 - **Dashboard Layout (`#view-inicio`):**
   - `#view-inicio` es `flex column` con `gap: 24px`.
   - **Primera fila:** `.stats-grid` (KPIs, full-width, `grid 4 columnas`).
@@ -21,9 +22,11 @@
     - `.dashboard-layout__primary` (72%): `.charts-row` (flex column).
     - `.dashboard-layout__secondary` (28%): `.activity-monitor-panel`.
   - Ambas columnas usan `align-items: stretch` para simetría perfecta.
-- **Explorer Master Layout (80/20):**
-  - **Primary Column (80%):** Área principal de navegación de archivos.
-  - **Sidebar Column (20% / ~300px):** Panel lateral fijo para gestión.
+- **Explorer Master Layout (Fluid/Fixed):**
+  - **Main Area (1fr):** Dinámico y fluido para aprovechar el 100% del ancho disponible (No `max-width`).
+  - **Sidebar (340px):** Panel lateral fijo de alta densidad para ficha técnica.
+  - **Gap:** `1.5rem (24px)` entre columnas.
+  - **Container:** `.catalog-container` debe ser fluido con `padding: 0 1.75rem` para alineación simétrica.
 - **Sidebar Internal Layout (Vertical 20/80):**
   - **Top Panel (20%):** Search bar y botones de acción (Subir/Nueva).
   - **Bottom Panel (80%):** Vista previa detallada y metadatos del archivo.
@@ -126,12 +129,13 @@ Header unificado para todos los paneles del dashboard. Garantiza simetría visua
   </div>
   ```
 - **Estilos:**
-  - Layout: `display: flex; align-items: center; gap: 12px`.
+  - Layout: `display: flex; align-items: center; justify-content: space-between`.
   - Separador: `border-bottom: 1px solid var(--border-color)`.
   - Espaciado: `padding-bottom: 16px; margin-bottom: 20px`.
 - **Título (`.stat-card-title-nexus`):**
   - Tipografía: `Outfit`, peso `700`, tamaño `1rem`.
   - Color: `var(--text-primary)`.
+- **Acciones:** Los botones o iconos de acción (flechas `->`) deben estar anclados a la derecha.
 
 ### 🛰️ activity-monitor-panel (System Monitor)
 Panel lateral del dashboard para visualización de logs en tiempo real.
@@ -234,12 +238,28 @@ Estado vacío del panel lateral de ficha técnica.
 - **Título:** `Outfit` / `1.25rem` / peso `900`.
 - **Badge:** Uppercase, `0.7rem`, peso `800`, borde indigo sutil.
 
+### 🧪 Nexus Preview System (Sidebar Assets)
+Componentes para la visualización de activos seleccionados en la columna de detalles.
+- **.preview-nexus-frame:**
+  - Dimensiones: `100% x 140px`.
+  - Border-radius: `20px`.
+  - Dark Mode BG: `#0f172a !important`.
+  - Elementos: `img` o `icon` centrados matemáticamente.
+- **.nexus-detail-filename:**
+  - Carácter: Único y segregado (Evita herencia de grid).
+  - Posicionamiento: `relative !important` (Nunca absoluto).
+  - Tipografía: `Outfit 700`, `1.05rem`, centrado, alineación vertical debajo del frame.
+- **.datasheet-nexus-grid:**
+  - Rejilla técnica de metadatos.
+  - Dark Mode BG: `#0f172a` (Sincronizado con el Frame).
+
 ## 📑 Business Rules (UI Compliance)
 1. **No Inline Styles:** Solo se permiten en casos excepcionales de inyección dinámica por JS (colores de iconos contextuales). El resto debe estar en `drive.css` o `style.css`.
 2. **Interactive States:** Target mínimo de `48px` para táctil. Efecto click: `transform: scale(0.96)`.
 3. **Glassmorphism:** Uso moderado de `backdrop-filter: blur(12px)` para paneles luxury.
-4. **Panel Consistency:** Todo panel del dashboard DEBE usar `.monitor-header-status` como header con icono + título + separador.
-5. **No `!important`:** Evitar `!important` en nuevas reglas. Resolver especificidad con selectores más específicos.
+4. **Panel Consistency:** Todo panel del dashboard DEBE usar `.monitor-header-status` como header con icono + título + separador y dispersión horizontal.
+5. **Fluidity Rule:** Queda prohibido el uso de `max-width` fijos en contenedores de vista operativa. La aplicación es fluida por defecto.
+6. **No `!important`:** Evitar `!important` en nuevas reglas. Resolver especificidad con selectores más específicos.
 
 ---
 *Last Updated: 2026-04-16*

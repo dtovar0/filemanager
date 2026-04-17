@@ -67,3 +67,11 @@ Mejora la experiencia de usuario (UX) al proporcionar contexto visual inmediato 
 2. **Contexto:** Los mensajes deben ser personalizados incluyendo el nombre del activo afectado para evitar ambigüedad.
 3. **Persistencia:** Duración estándar de 3000ms con barra de progreso visual.
 4. **Contexto de Modal:** Toda notificación originada desde un modal activo (ej: errores de validación, colisiones de nombre) DEBE ser un **Toast**. Nunca se debe encimar un modal sobre otro.
+
+## Módulo: Interfaz y Simetría (Revision 3)
+### Regla: Estandarización de Top-Bar
+La cabecera principal debe tener una altura fija de 64px (--topbar-height) en toda la aplicación para garantizar simetría vertical.
+### Regla: Contenedores Fluidos
+El explorador Drive no debe usar max-width fijos. Debe ser 100% fluido para aprovechar pantallas wide, alineado con el padding del dashboard.
+### Regla: Segregación de Componentes
+Los elementos del panel lateral deben usar clases únicas (ej: .nexus-detail-filename) para evitar colisiones de estilo.
