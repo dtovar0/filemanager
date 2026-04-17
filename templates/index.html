@@ -235,7 +235,7 @@
         <div class="stat-card-premium">
             <div class="d-flex justify-between items-center mb-075">
                 <h2 class="stat-card-title-nexus">Usuarios por Plataforma</h2>
-                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more">
+                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more" data-tooltip="Ver todas las plataformas">
                     <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -247,7 +247,7 @@
         <div class="stat-card-premium">
             <div class="d-flex justify-between items-center mb-075">
                 <h2 class="stat-card-title-nexus">Usuarios por Área</h2>
-                <a href="{{ url_for('admin.areas_list') }}" class="btn-view-more">
+                <a href="{{ url_for('admin.areas_list') }}" class="btn-view-more" data-tooltip="Ver gestión de áreas">
                     <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -259,7 +259,7 @@
         <div class="stat-card-premium">
             <div class="d-flex justify-between items-center mb-075">
                 <h2 class="stat-card-title-nexus">Ocupación por Plataforma (GB)</h2>
-                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more">
+                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more" data-tooltip="Detalle de almacenamiento">
                     <i class="fas fa-database"></i>
                 </a>
             </div>
@@ -271,7 +271,7 @@
         <div class="stat-card-premium">
             <div class="d-flex justify-between items-center mb-075">
                 <h2 class="stat-card-title-nexus">Plataformas Más Descargadas</h2>
-                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more">
+                <a href="{{ url_for('main.platforms_list') }}" class="btn-view-more" data-tooltip="Estadísticas de uso">
                     <i class="fas fa-chart-line"></i>
                 </a>
             </div>
@@ -289,7 +289,7 @@
                     <i class="fas fa-satellite-dish" style="color: var(--dash-accent);"></i>
                     <h2 class="stat-card-title-nexus">Monitoreo de Actividad</h2>
                 </div>
-                <a href="{{ url_for('admin.audit_view') }}" class="btn-view-more">
+                <a href="{{ url_for('admin.audit_view') }}" class="btn-view-more" data-tooltip="Ver auditoría completa">
                     <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
