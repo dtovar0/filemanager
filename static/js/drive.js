@@ -162,13 +162,20 @@ class FileExplorer {
         
         // Construcción de la tarjeta vertical Luxury
         card.innerHTML = `
-            <div class="explorer-icon-wrapper" style="background: ${info.color}25; color: ${info.color}; border: 1.5px solid ${info.color}40; box-shadow: 0 8px 18px ${info.color}15;">
+            <div class="explorer-icon-wrapper">
                 <i class="fas ${info.icon}"></i>
             </div>
             <div class="explorer-item-info">
                 <div class="explorer-item-name" title="${item.name}">${item.name}</div>
             </div>
         `;
+
+        // Aplicar variables de color de manera programática (No Inline string)
+        const iconWrapper = card.querySelector('.explorer-icon-wrapper');
+        iconWrapper.style.setProperty('--nexus-icon-color', info.color);
+        iconWrapper.style.setProperty('--nexus-icon-bg', `${info.color}25`);
+        iconWrapper.style.setProperty('--nexus-icon-border', `${info.color}40`);
+        iconWrapper.style.setProperty('--nexus-icon-shadow', `${info.color}15`);
         card.onclick = (e) => {
             e.stopPropagation();
             this.container.querySelectorAll('.explorer-item').forEach(el => el.classList.remove('selected'));
@@ -296,21 +303,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="preview-active-content">
                         <!-- 1. Icono / Vista Previa -->
                         <div class="preview-nexus-frame" id="nexus-preview-frame">
-                            <i id="preview-placeholder-icon" class="fas ${info.icon}" style="font-size: 4.5rem; color: ${info.color}; opacity: 0.8;"></i>
+                            <i id="preview-placeholder-icon" class="fas ${info.icon} preview-placeholder-icon"></i>
                         </div>
 
                         <!-- 2. Nombre -->
                         <div class="preview-item-name">${item.name}</div>
 
                         <!-- 3. Etiqueta (Badge) -->
-                        <div class="file-nexus-badge" style="background: ${info.color}15 !important; border-color: ${info.color}30 !important; color: ${info.color} !important;">
+                        <div class="file-nexus-badge">
                             ${info.type}
                         </div>
 
                         <!-- 4. Detalle del Archivo (Peso y Fecha) -->
                         <div class="datasheet-nexus-grid">
                             <div class="datasheet-nexus-row">
-                                <div class="datasheet-nexus-icon" style="background: ${info.color} !important;">
+                                <div class="datasheet-nexus-icon icon-dynamic">
                                     <i class="fas fa-weight-hanging"></i>
                                 </div>
                                 <div class="datasheet-nexus-info">
@@ -320,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
 
                             <div class="datasheet-nexus-row">
-                                <div class="datasheet-nexus-icon" style="background: #3b82f6 !important;">
+                                <div class="datasheet-nexus-icon icon-blue">
                                     <i class="fas fa-clock"></i>
                                 </div>
                                 <div class="datasheet-nexus-info">
@@ -336,17 +343,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         <!-- 5. Botones (Download y Borrar) -->
                         <div class="preview-actions-footer">
-                            <button class="btn" id="detail-btn-download" style="--btn-accent: #10b981;">
-                                <div class="btn-icon-box" style="margin-right: 0.5rem; width: 24px; height: 24px;"><i class="fas fa-download" style="font-size: 0.7rem;"></i></div>
+                            <button class="btn" id="detail-btn-download">
+                                <i class="fas fa-download"></i>
                                 Descargar
                             </button>
-                            <button class="btn" id="detail-btn-delete" style="--btn-accent: #ef4444;">
-                                <div class="btn-icon-box" style="margin-right: 0.5rem; width: 24px; height: 24px;"><i class="fas fa-trash-alt" style="font-size: 0.7rem;"></i></div>
+                            <button class="btn" id="detail-btn-delete">
+                                <i class="fas fa-trash-alt"></i>
                                 Borrar
                             </button>
                         </div>
                     </div>
                 `;
+
+                // Aplicación de variables programáticas (Sanitización Inline)
+                const sidebarEl = document.getElementById('details-content');
+                const prevIcon = sidebarEl?.querySelector('.preview-placeholder-icon');
+                const prevBadge = sidebarEl?.querySelector('.file-nexus-badge');
+                const dsIcons = sidebarEl?.querySelectorAll('.icon-dynamic');
+                
+                if (prevIcon) prevIcon.style.setProperty('--nexus-icon-color', info.color);
+                if (prevBadge) {
+                    prevBadge.style.setProperty('--nexus-color', info.color);
+                    prevBadge.style.setProperty('--nexus-color-bg', `${info.color}15`);
+                    prevBadge.style.setProperty('--nexus-color-border', `${info.color}30`);
+                }
+                if (dsIcons) {
+                    dsIcons.forEach(icon => icon.style.setProperty('--nexus-color', info.color));
+                }
 
                 // Re-vincular eventos a los nuevos botones
                 document.getElementById('detail-btn-download')?.addEventListener('click', () => downloadSelected());
@@ -671,12 +694,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!logs || logs.length === 0) {
             container.innerHTML = `
-                <div class="premium-empty-state-chart" style="margin-top: 2rem; opacity: 0.8;">
-                    <div class="chart-empty-icon" style="background: rgba(99, 102, 241, 0.05); width: 60px; height: 60px;">
-                        <i class="fas fa-wave-square" style="font-size: 24px;"></i>
+                <div class="premium-empty-state-chart">
+                    <div class="chart-empty-icon">
+                        <i class="fas fa-wave-square"></i>
                     </div>
-                    <p class="chart-empty-title" style="font-size: 0.9rem;">Sin Actividad</p>
-                    <p class="chart-empty-text" style="font-size: 0.75rem;">El monitor de auditoría está a la escucha de nuevos eventos.</p>
+                    <p class="chart-empty-title">Sin Actividad</p>
+                    <p class="chart-empty-text">El monitor de auditoría está a la escucha de nuevos eventos.</p>
                 </div>
             `;
             return;
@@ -692,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const logTime = log.created_at ? log.created_at.split(' ')[1] : '--:--';
 
             timelineItem.innerHTML = `
-                <div class="timeline-node ${info.class}" style="background: ${info.bg}; color: ${info.color};">
+                <div class="timeline-node ${info.class}">
                     <i class="fas ${info.icon}"></i>
                 </div>
                 <div class="timeline-content">
@@ -705,6 +728,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
+
+            // Aplicar colores dinámicos programáticamente
+            const node = timelineItem.querySelector('.timeline-node');
+            if (node) {
+                node.style.setProperty('--nexus-node-bg', info.bg);
+                node.style.setProperty('--nexus-node-color', info.color);
+            }
             container.appendChild(timelineItem);
         });
     }

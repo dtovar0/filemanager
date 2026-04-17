@@ -2317,6 +2317,7 @@
     opacity: 1;
     z-index: 10;
     padding: 3rem 2rem;
+    grid-column: 1 / -1;
 }
 
 .empty-state-visual-nexus {
@@ -2415,48 +2416,46 @@
 
 .btn {
     flex: 1 !important;
-    height: 48px !important;
-    background: transparent !important;
-    border: 1.5px solid rgba(148, 163, 184, 0.2) !important;
-    border-radius: 14px !important;
-    color: var(--text-primary) !important;
-    font-size: 0.8rem !important;
+    height: 44px !important;
+    background: rgba(99, 102, 241, 0.08) !important;
+    border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 12px !important;
+    color: #6366f1 !important;
+    font-size: 0.85rem !important;
     font-family: 'Outfit', sans-serif !important;
     font-weight: 700 !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    padding: 0 0.85rem !important;
-    transition: all 0.2s ease !important;
+    justify-content: center !important;
+    padding: 0 1rem !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     cursor: pointer !important;
+    gap: 0.75rem !important;
+}
+
+.btn i {
+    font-size: 1.1rem !important;
+    transition: transform 0.2s ease !important;
+    color: #6366f1 !important;
 }
 
 .btn:hover {
     transform: translateY(-2px);
-    border-color: var(--primary-color) !important;
-    background: rgba(99, 102, 241, 0.02) !important;
+    background: rgba(99, 102, 241, 0.15) !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 8px 18px rgba(99, 102, 241, 0.1) !important;
 }
 
-.btn-icon-box {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 8px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
-    margin-right: 0.75rem !important;
-    background: var(--btn-accent, var(--primary-color)) !important;
-    color: #ffffff !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+.btn:hover i {
+    transform: scale(1.1);
 }
 
-.btn-icon-box i { font-size: 0.85rem !important; color: #ffffff !important; }
+.btn-icon-box { display: none !important; }
 
-#trigger-upload { --btn-accent: #6366f1 !important; }
-#open-folder-modal { --btn-accent: #f59e0b !important; }
-#btn-download-main { --btn-accent: #10b981 !important; }
-#btn-delete-main { --btn-accent: #ef4444 !important; }
+/* Unificación de Estética Ghost-Fill (Acento Único) */
+#trigger-upload, #open-folder-modal, #detail-btn-download, #detail-btn-delete { 
+    --btn-accent: #6366f1 !important; 
+}
 
 /* Explorer High-Density Grid */
 .explorer-main-area {
@@ -2498,6 +2497,26 @@
     cursor: pointer;
 }
 
+.explorer-icon-wrapper {
+    background: var(--nexus-icon-bg, rgba(99, 102, 241, 0.1));
+    color: var(--nexus-icon-color, #6366f1);
+    border: 1.5px solid var(--nexus-icon-border, rgba(99, 102, 241, 0.2));
+    box-shadow: 0 8px 18px var(--nexus-icon-shadow, rgba(99, 102, 241, 0.05));
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.explorer-item:hover .explorer-icon-wrapper {
+    transform: scale(1.1);
+}
+
 .explorer-item:hover {
     transform: translateY(-4px);
     border-color: var(--primary-color) !important;
@@ -2535,6 +2554,25 @@
     align-items: center !important;
     padding: 1rem 1.25rem !important;
     gap: 1rem !important;
+}
+
+/* --- Action Button Variants --- */
+.btn--emerald { --btn-accent: #10b981 !important; }
+.btn--rose { --btn-accent: #ef4444 !important; }
+
+.btn-icon-mini {
+    margin-right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.1);
+}
+
+.btn-icon-mini i {
+    font-size: 0.7rem;
 }
 
 /* ==========================================================
@@ -2783,15 +2821,21 @@
     width: 100% !important;
     text-align: center !important;
     padding: 0.6rem 1rem !important;
-    background: rgba(99, 102, 241, 0.1) !important;
-    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    background: var(--nexus-color-bg, rgba(99, 102, 241, 0.1)) !important;
+    border: 1px solid var(--nexus-color-border, rgba(99, 102, 241, 0.2)) !important;
     border-radius: 12px !important;
-    color: var(--primary-color) !important;
+    color: var(--nexus-color, #6366f1) !important;
     font-size: 0.7rem !important;
     font-weight: 800 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.05em !important;
     box-sizing: border-box !important;
+}
+
+.preview-placeholder-icon {
+    font-size: 5rem !important;
+    color: var(--nexus-icon-color, #6366f1) !important;
+    opacity: 0.8;
 }
 
 /* Technical Datasheet Nexus Style */
@@ -3141,6 +3185,88 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* --- Utility Icons & Badges --- */
+.preview-placeholder-icon {
+    font-size: 4.5rem !important;
+    color: var(--nexus-icon-color) !important;
+    opacity: 0.8;
+}
+
+.file-nexus-badge {
+    background: var(--nexus-color-bg) !important;
+    border: 1px solid var(--nexus-color-border) !important;
+    color: var(--nexus-color) !important;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.datasheet-nexus-icon {
+    background: var(--nexus-color, #6366f1) !important;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.btn-cancel-upload {
+    background: none !important;
+    border: none !important;
+    color: #ef4444 !important;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 4px;
+    transition: transform 0.2s ease;
+}
+
+.btn-cancel-upload:hover {
+    transform: scale(1.2);
+}
+
+.timeline-node {
+    background: var(--nexus-node-bg, rgba(99, 102, 241, 0.1)) !important;
+    color: var(--nexus-node-color, #6366f1) !important;
+}
+
+/* --- Chart Empty States --- */
+.premium-empty-state-chart {
+    margin-top: 2rem;
+    opacity: 0.8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chart-empty-icon {
+    background: rgba(99, 102, 241, 0.05);
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.chart-empty-icon i {
+    font-size: 24px !important;
+}
+
+.chart-empty-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.chart-empty-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
 }
 
 /* HIGH PRIORITY UTILITIES (FORCE SHIELD) */
