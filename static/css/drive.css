@@ -2776,27 +2776,11 @@
 }
 
 /* ==========================================================
-   8. VISIBILITY & COEXISTENCE SHIELD (MANDATORY)
-   ========================================================== */
-.d-none { display: none !important; }
-.d-flex { display: flex !important; }
-
-/* ==========================================================
    7. DETAIL PREVIEW & ACTION FOOTER (FIX)
    ========================================================== */
-.preview-active-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    width: 100% !important;
-    height: 100% !important; /* Expansión para permitir el empuje de botones */
-    padding-top: 0.5rem;
-    gap: 0.5rem !important;
-}
-
 .preview-nexus-frame {
     width: 100% !important;
-    height: 140px !important; /* Altura fija para evitar saltos */
+    height: 140px !important;
     background: rgba(0,0,0,0.02) !important;
     border-radius: 20px !important;
     overflow: hidden !important;
@@ -2809,12 +2793,10 @@
 
 [data-theme="dark"] .preview-nexus-frame { background: #0f172a !important; }
 
-.preview-nexus-frame img {
-    max-width: 90% !important; /* Un poco más pequeña para respirar */
-    max-height: 90% !important;
-    object-fit: contain !important;
-    border-radius: 12px !important;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+.preview-placeholder-icon {
+    font-size: 5rem !important;
+    color: var(--nexus-icon-color, #6366f1) !important;
+    opacity: 0.8;
 }
 
 .file-nexus-badge {
@@ -2832,12 +2814,6 @@
     box-sizing: border-box !important;
 }
 
-.preview-placeholder-icon {
-    font-size: 5rem !important;
-    color: var(--nexus-icon-color, #6366f1) !important;
-    opacity: 0.8;
-}
-
 /* Technical Datasheet Nexus Style */
 .datasheet-nexus-grid {
     width: 100% !important;
@@ -2847,7 +2823,7 @@
     border: 1px solid var(--border-color) !important;
     border-radius: 20px !important;
     overflow: hidden !important;
-    margin-top: 1rem !important; /* Separación solicitada respecto a la etiqueta */
+    margin-top: 1rem !important;
 }
 
 [data-theme="dark"] .datasheet-nexus-grid { background: rgba(30, 41, 59, 0.3) !important; }
@@ -2856,17 +2832,12 @@
     display: flex !important;
     align-items: center !important;
     padding: 1rem 1.25rem !important;
-    transition: background 0.2s ease !important;
-}
-
-.datasheet-nexus-row:hover {
-    background: rgba(99, 102, 241, 0.02) !important;
 }
 
 .datasheet-nexus-icon {
     width: 36px !important;
     height: 36px !important;
-    background: var(--primary-color) !important;
+    background: var(--nexus-color, #6366f1) !important;
     border-radius: 10px !important;
     display: flex !important;
     align-items: center !important;
@@ -2880,18 +2851,12 @@
 .datasheet-nexus-label { font-size: 0.65rem !important; color: var(--text-muted) !important; font-weight: 600 !important; text-transform: uppercase; }
 .datasheet-nexus-value { font-size: 0.85rem !important; color: var(--text-primary) !important; font-weight: 700 !important; }
 
-/* Action Footer Master Fix */
 .preview-actions-footer {
     display: flex !important;
     gap: 0.75rem !important;
     width: 100% !important;
     margin-top: 0.5rem !important;
-}
-
-.preview-actions-footer .btn {
-    flex: 1 !important;
-    padding: 0 !important;
-    justify-content: center !important;
+}mportant;
 }
 
 /* ==========================================================
