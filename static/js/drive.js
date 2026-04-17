@@ -298,16 +298,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 content.classList.remove('d-none');
                 content.classList.add('d-flex');
                 
+                // Generación de Vista Previa (Imagen Real o Icono Premium)
+                const previewContent = info.is_img ? 
+                    `<img src="/api/drive/preview?path=${encodeURIComponent(item.path)}&password=${this.lastPassword || ''}" class="preview-img-fluid" alt="">` :
+                    `<i id="preview-placeholder-icon" class="fas ${info.icon} preview-placeholder-icon"></i>`;
+
                 // Limpieza de contenedor principal con orden estrictamente solicitado:
                 content.innerHTML = `
                     <div class="preview-active-content">
                         <!-- 1. Icono / Vista Previa -->
                         <div class="preview-nexus-frame" id="nexus-preview-frame">
-                            <i id="preview-placeholder-icon" class="fas ${info.icon} preview-placeholder-icon"></i>
+                            ${previewContent}
                         </div>
 
                         <!-- 2. Nombre -->
-                        <div class="preview-item-name">${item.name}</div>
+                        <div class="nexus-detail-filename">${item.name}</div>
 
                         <!-- 3. Etiqueta (Badge) -->
                         <div class="file-nexus-badge">

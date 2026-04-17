@@ -2778,6 +2778,27 @@
 /* ==========================================================
    7. DETAIL PREVIEW & ACTION FOOTER (FIX)
    ========================================================== */
+.preview-active-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+}
+
+.nexus-detail-filename {
+    position: relative !important;
+    inset: auto !important;
+    color: var(--text-primary) !important;
+    text-shadow: none !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    width: 100% !important;
+    padding: 0.25rem 0 !important;
+    margin: 0 !important;
+    word-break: break-all !important;
+}
 .preview-nexus-frame {
     width: 100% !important;
     height: 140px !important;
@@ -2792,6 +2813,19 @@
 }
 
 [data-theme="dark"] .preview-nexus-frame { background: #0f172a !important; }
+
+.preview-nexus-frame img, .preview-img-fluid {
+    max-width: 90% !important;
+    max-height: 90% !important;
+    object-fit: contain !important;
+    border-radius: 12px !important;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease;
+}
+
+.preview-nexus-frame img:hover, .preview-img-fluid:hover {
+    transform: scale(1.05);
+}
 
 .preview-placeholder-icon {
     font-size: 5rem !important;
@@ -2826,7 +2860,7 @@
     margin-top: 1rem !important;
 }
 
-[data-theme="dark"] .datasheet-nexus-grid { background: rgba(30, 41, 59, 0.3) !important; }
+[data-theme="dark"] .datasheet-nexus-grid { background: #0f172a !important; }
 
 .datasheet-nexus-row {
     display: flex !important;
