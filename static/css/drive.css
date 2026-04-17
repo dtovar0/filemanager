@@ -2168,6 +2168,7 @@
 .monitor-header-status {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border-color);
@@ -2590,7 +2591,8 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 1rem !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
     width: 100% !important;
 }
 
